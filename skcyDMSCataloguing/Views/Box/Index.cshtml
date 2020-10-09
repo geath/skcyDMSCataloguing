@@ -1,0 +1,93 @@
+﻿@model BoxFolderDocIndexData
+
+@{
+    ViewData["Title"] = "Register for Containers (Boxes) ";
+}
+
+<h1>Index of Boxes</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th> BoxDescription </th>
+            <th> DateBoxCreated </th>
+            <th> BoxCreator     </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Boxes)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BoxDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateBoxCreated)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BoxCreatedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BoxCreator.CreatorName)
+                </td>
+                <td>
+                    <a asp-action="Index" asp-route-id="@item.ID">Select</a> |
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.Folders != null)
+{
+    <br />
+    <br />
+    <h3> Folders or Documents in the selected box</h3>
+    <a asp-controller="Folder" asp-action="Create" asp-route-boxid=@ViewData["BoxID"]>Create New Task</a>
+    <br />
+
+    <table class="table">
+        <tr>
+            <th></th>
+            <th>FolderName</th>
+            <th>FolderDescription</th>
+            <th>CIF</th>
+
+            <th>BoxID</th>
+        </tr>
+
+        @foreach (var fld in Model.Folders)
+        {
+    <tr>
+        <td>
+        </td>       
+        <td>
+            @fld.FolderName
+        </td>
+        <td>
+            @fld.FolderDescription
+        </td>
+        <td>
+            @fld.CustData.CIFNo
+        </td>
+        <td>
+            <a asp-controller="Folder" asp-action="Edit" asp-route-id="@fld.ID">Edit Folder</a> |
+            <a asp-controller="Folder" asp-action="Delete" asp-route-ID="@fld.ID">Delete Folder</a>
+        </td>
+    </tr>
+        }
+    </table>
+}
+
+
+
+
+
+           

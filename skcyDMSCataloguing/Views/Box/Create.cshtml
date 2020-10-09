@@ -1,0 +1,44 @@
+﻿@model skcyDMSCataloguing.Models.Box
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Box</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="BoxDescription" class="control-label"></label>
+                <input asp-for="BoxDescription" class="form-control" />
+                <span asp-validation-for="BoxDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateBoxCreated" class="control-label"></label>
+                <input asp-for="DateBoxCreated" class="form-control" />
+                <span asp-validation-for="DateBoxCreated" class="text-danger"></span>
+            </div>
+            @*<input asp-for="DateBoxCreated" type="hidden" />*@
+            <div class="form-group">
+                <label asp-for="BoxCreatorID" class="control-label"></label>
+                <input asp-for="BoxCreatorID" class="form-control" />
+                <span asp-validation-for="BoxCreatedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
