@@ -63,6 +63,11 @@ namespace skcyDMSCataloguing.DAL
                 .WithMany(cad => cad.CustRelDataEntries)
                 .HasForeignKey(crd => crd.CustAccDataID);
 
+            modelBuilder.Entity<Folder>()
+               .HasOne(fld => fld.CustData)
+               .WithMany(cdt => cdt.Folders)
+               .HasForeignKey(fld => fld.CustDataCIFNo)
+               .HasPrincipalKey(cdt => cdt.CIFNo);
 
             modelBuilder.Entity<PrjHelix1>()
                 .HasOne(hlx => hlx.CustData)

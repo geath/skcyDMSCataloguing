@@ -13,7 +13,7 @@ namespace skcyDMSCataloguing.Models
         public string BoxDescription  { get; set; }
         
         public DateTime DateBoxCreated { get; set; }
-        public int BoxCreatedBy { get; set; }
+        public string BoxCreatedBy { get; set; }
 
         public int BoxCreatorID { get; set; }
         public virtual BoxCreator BoxCreator { get; set; }

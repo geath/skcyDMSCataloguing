@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,8 +32,12 @@ namespace skcyDMSCataloguing
 
             services.AddScoped<IBaseAsyncRepo<Box>, BaseAsyncRepo<Box>>();
             services.AddScoped<IBaseAsyncRepo<Folder>, BaseAsyncRepo<Folder>>();
+            services.AddScoped<IBaseAsyncRepo<BoxCreator>, BaseAsyncRepo<BoxCreator>>();
 
+            
             services.AddControllersWithViews();
+            services.AddHttpContextAccessor();
+
 
         }
 

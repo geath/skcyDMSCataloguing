@@ -7,14 +7,15 @@
 <h1>Index of Boxes</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Create New Box</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th> BoxDescription </th>
             <th> DateBoxCreated </th>
-            <th> BoxCreator     </th>
+            <th> BoxCreatedBy   </th>
+            <th> Box Creator Name </th>
             <th></th>
         </tr>
     </thead>
@@ -36,46 +37,70 @@
                 </td>
                 <td>
                     <a asp-action="Index" asp-route-id="@item.ID">Select</a> |
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |                    
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-@if (Model.Folders != null)
+@if (Model.Folders != null || Model.CustDatas !=null)
 {
     <br />
     <br />
-    <h3> Folders or Documents in the selected box</h3>
-    <a asp-controller="Folder" asp-action="Create" asp-route-boxid=@ViewData["BoxID"]>Create New Task</a>
+    <h3> Folders or DocumentBatches in the selected box : @ViewData["BoxID"]</h3>
+    <a asp-controller="Folder" asp-action="Create" asp-route-boxid=@ViewData["BoxID"]>Create New Folder or DocumentBatch</a>
     <br />
 
     <table class="table">
         <tr>
+            <th>Barcode</th>
+            <th>CIFNo</th>
+            <th>CustomerName</th>
+             
+            <th>IsHelix1</th>
+            <th>IsVelocity1</th>
+            <th>IsVelocity2</th>
             <th></th>
-            <th>FolderName</th>
-            <th>FolderDescription</th>
-            <th>CIF</th>
-
-            <th>BoxID</th>
         </tr>
 
         @foreach (var fld in Model.Folders)
         {
+            
     <tr>
+        <td>@fld.FolderName</td>
+        <td>@fld.CustDataCIFNo</td>
+        <td>@fld.CustData.CustomerName</td>
+         
         <td>
-        </td>       
-        <td>
-            @fld.FolderName
+            @{ if (fld.CustData.PrjHelixes1 != null)
+
+                    foreach (var hlx in fld.CustData.PrjHelixes1)
+                    {
+                        @hlx.Helix1Pool
+                        <br />
+                    }
+            }
         </td>
         <td>
-            @fld.FolderDescription
+            @{ if (fld.CustData.PrjVelocities1 != null)
+
+                    foreach (var vel1 in fld.CustData.PrjVelocities1)
+                    {
+                        @vel1.CustDataCIFNo.Any()
+                        <br />
+                    }
+            }
         </td>
         <td>
-            @fld.CustData.CIFNo
+            @{ if (fld.CustData.PrjVelocities2 != null)
+
+                    foreach (var vel2 in fld.CustData.PrjVelocities2)
+                    {
+                        @vel2.CustDataCIFNo.Any()
+                        <br />
+                    }
+            }
         </td>
         <td>
             <a asp-controller="Folder" asp-action="Edit" asp-route-id="@fld.ID">Edit Folder</a> |

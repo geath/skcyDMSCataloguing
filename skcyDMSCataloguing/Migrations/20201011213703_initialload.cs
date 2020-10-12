@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace skcyDMSCataloguing.Migrations
 {
-    public partial class initialmodel : Migration
+    public partial class initialload : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,7 +13,12 @@ namespace skcyDMSCataloguing.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CustAccountNo = table.Column<string>(nullable: false)
+                    CustAccountNo = table.Column<string>(nullable: false),
+                    CustRelCifNo = table.Column<string>(nullable: true),
+                    CustOldAccountNo = table.Column<string>(nullable: true),
+                    CustAccountType = table.Column<string>(nullable: true),
+                    CustAccountStatus = table.Column<string>(nullable: true),
+                    CustAccountRelationCode = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -60,7 +65,7 @@ namespace skcyDMSCataloguing.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BoxDescription = table.Column<string>(nullable: true),
                     DateBoxCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
-                    BoxCreatedBy = table.Column<int>(nullable: false),
+                    BoxCreatedBy = table.Column<string>(nullable: true),
                     BoxCreatorID = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -80,10 +85,6 @@ namespace skcyDMSCataloguing.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CustOldAccountNo = table.Column<string>(nullable: true),
-                    CustAccountType = table.Column<string>(nullable: true),
-                    CustAccountStatus = table.Column<string>(nullable: true),
-                    CustAccountRelationCode = table.Column<string>(nullable: true),
                     CustDataID = table.Column<int>(nullable: false),
                     CustAccDataID = table.Column<int>(nullable: false)
                 },
@@ -171,7 +172,7 @@ namespace skcyDMSCataloguing.Migrations
                     FolderName = table.Column<string>(nullable: true),
                     FolderDescription = table.Column<string>(nullable: true),
                     BoxID = table.Column<int>(nullable: false),
-                    CustDataID = table.Column<int>(nullable: false)
+                    CustDataCIFNo = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -183,11 +184,11 @@ namespace skcyDMSCataloguing.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Folder_Customer_CustDataID",
-                        column: x => x.CustDataID,
+                        name: "FK_Folder_Customer_CustDataCIFNo",
+                        column: x => x.CustDataCIFNo,
                         principalTable: "Customer",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CIFNo",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -211,9 +212,9 @@ namespace skcyDMSCataloguing.Migrations
                 column: "BoxID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Folder_CustDataID",
+                name: "IX_Folder_CustDataCIFNo",
                 table: "Folder",
-                column: "CustDataID");
+                column: "CustDataCIFNo");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PrjHelix1_CustDataCIFNo",

@@ -13,19 +13,25 @@ namespace skcyDMSCataloguing.Controllers
 {
     public class FolderController : Controller
     {
-        private readonly IBaseAsyncRepo<Folder> baseAsyncRepo;
+        private readonly IBaseAsyncRepo<Folder> baseAsyncFolderRepo;
 
-        public FolderController(IBaseAsyncRepo<Folder> baseAsyncRepo)
+        public FolderController(IBaseAsyncRepo<Folder> baseAsyncFolderRepo)
         {
-            this.baseAsyncRepo = baseAsyncRepo;
+            this.baseAsyncFolderRepo = baseAsyncFolderRepo;
         }
 
 
         // GET: FolderController
         public async Task<ActionResult> Index()
         {
-            var query = await baseAsyncRepo.GetAllAsync(includeproperty: source=>source
-                                .Include(cd=>cd.CustData));
+            var query = await baseAsyncFolderRepo.GetAllAsync(includeproperty: source=>source
+                                .Include(cd=>cd.CustData)
+                                    .ThenInclude(hl=>hl.PrjHelixes1)
+                                 .Include(cd => cd.CustData)
+                                    .ThenInclude(hl => hl.PrjVelocities1)
+                                  .Include(cd => cd.CustData)
+                                    .ThenInclude(hl => hl.PrjVelocities2)
+                                    );
 
             return View(query);
         }
@@ -35,7 +41,7 @@ namespace skcyDMSCataloguing.Controllers
         {
             if (id == null) { return NotFound(); }
 
-            var folder = await baseAsyncRepo.GetAllAsync(fl=>fl.ID==id, includeproperty: source => source
+            var folder = await baseAsyncFolderRepo.GetAllAsync(fl=>fl.ID==id, includeproperty: source => source
                                 .Include(cd => cd.CustData));
 
             if (folder==null) { return NotFound(); }
@@ -50,30 +56,34 @@ namespace skcyDMSCataloguing.Controllers
 
             if (boxid != null)
             {
-                var folderreltoboxid = await baseAsyncRepo.GetAllAsync(b => b.BoxID == boxid, orderBy: q => q.OrderByDescending(q => q.ID));
+                var folderreltoboxid = await baseAsyncFolderRepo.GetAllAsync(b => b.BoxID == boxid, orderBy: q => q.OrderByDescending(q => q.ID));
 
-                if (folderreltoboxid.FirstOrDefault() == null)
+                if (folderreltoboxid.FirstOrDefault() != null)
                 {
                     Folder foldertocreate = new Folder
                     {
-                        BoxID = boxid ?? 1                        
+                        BoxID = boxid ?? 1,
+                        FolderName = "",
+                        FolderDescription="",
+                        CustDataCIFNo=""
                     };
                     return View("CreateFromBox", foldertocreate);
                 }
                 return View("CreateFromBox", folderreltoboxid.FirstOrDefault());
             }
-            return View("Index");
+            return View();
         }
 
         // POST: FolderController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind("FolderName,FolderDescription,BoxID,CustDataID")] Folder folder) 
+        public async Task<ActionResult> Create([Bind("FolderName,FolderDescription,BoxID,CustDataCIFNo")] Folder folder) 
         {
             try
             {
-                baseAsyncRepo.Insert(folder);
-                await baseAsyncRepo.SaveAsync();
+
+                baseAsyncFolderRepo.Insert(folder);
+                await baseAsyncFolderRepo.SaveAsync();
 
                 return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Box", action = "Index", id = folder.BoxID }));
             }
@@ -84,44 +94,84 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: FolderController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int? id)
         {
-            return View();
+            if (id==null) { return NotFound(); }
+
+            var folderToEdit = await baseAsyncFolderRepo.GetByConditionAsync(filter: i => i.ID == id);
+
+            ViewData["BoxID"] = folderToEdit.BoxID;
+
+            return View(folderToEdit);
         }
 
         // POST: FolderController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(int id, [Bind("ID,FolderName,BoxID,CustDataCIFNo")] Folder folder)
         {
+            if (id != folder.ID)
+            {
+                return NotFound();
+            }
             try
             {
+                baseAsyncFolderRepo.Update(folder);
+                await baseAsyncFolderRepo.SaveAsync();
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (DbUpdateException /* dex */)
             {
-                return View();
+                //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
+                ModelState.AddModelError(string.Empty, "Unable to save changes. Try again, and if the problem persists contact your system administrator.");
             }
+
+             
+            return View(folder);
         }
 
         // GET: FolderController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int? id, bool? saveChangesError = false)
         {
-            return View();
+            if (id == null) { return NotFound(); }
+
+            var folderToDelete = await baseAsyncFolderRepo.GetByConditionAsync(fld => fld.ID == id, includeProperties:"Box,CustData");
+
+            ViewData["BoxID"] = folderToDelete.BoxID;
+
+            if (folderToDelete == null) { return NotFound(); }
+            
+            if (saveChangesError.GetValueOrDefault())
+            {
+                ViewData["ErrorMessage"] =
+                    "Delete failed. Try again, and if the problem persists " +
+                    "see your system administrator.";
+            }
+
+            return View(folderToDelete);
         }
 
         // POST: FolderController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> Delete(int id, Folder folder)
         {
-            try
+            if (folder == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-            catch
+
+            try
             {
-                return View();
+
+                baseAsyncFolderRepo.Delete(folder);
+                await baseAsyncFolderRepo.SaveAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException /* dex */)
+            {
+                //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
+                return RedirectToAction("Delete", new { id = id, saveChangesError = true });
             }
         }
     }

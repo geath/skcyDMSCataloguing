@@ -1,10 +1,10 @@
 ﻿@model skcyDMSCataloguing.Models.Folder
 
 @{
-    ViewData["Title"] = "CreateFromBox";
+    ViewData["Title"] = "Create";
 }
 
-<h1>CreateFromBox</h1>
+<h1>Create</h1>
 
 <h4>Folder</h4>
 <hr />
@@ -12,13 +12,15 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <input type="hidden" asp-for="BoxID" asp-items="@ViewData["BoxID"]" />
-
             <div class="form-group">
                 <label asp-for="FolderName" class="control-label">Folder's Barcode</label>
                 <input asp-for="FolderName" class="form-control" />
                 <span asp-validation-for="FolderName" class="text-danger"></span>
+            </div>       
+            <div class="form-group">
+                <label asp-for="BoxID" class="control-label"></label>
+                <input asp-for="BoxID" class ="form-control" />
+                <span asp-validation-for="BoxID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CustDataCIFNo" class="control-label">CIF Number</label>
@@ -33,7 +35,7 @@
 </div>
 
 <div>
-    <a asp-controller="Box" asp-action="Index" asp-route-id="@ViewData["BoxID"]">Back to List</a>
+    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

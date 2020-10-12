@@ -19,23 +19,11 @@ namespace skcyDMSCataloguing.DAL.Repositories
             _dbSet = context.Set<TEntity>();
         }
 
-        public IEnumerable<TEntity> Get()
+
+        public IEnumerable<TEntity> GetAll()
         {
-            return _dbSet.ToList();
-        }
-
-        public IEnumerable<TEntity> GetByCondition(Expression<Func<TEntity, bool>> filter = null, bool disableTracking = true)
-        {
-            IQueryable<TEntity> query = _dbSet;
-
-            if (disableTracking)
-            { query = query.AsNoTracking(); }
-
-            if (filter != null)
-            { query = query.Where(filter).AsNoTracking(); }
-
-
-            return query.ToList();
+            IEnumerable<TEntity> query = _dbSet.AsQueryable().ToList();
+            return query;
         }
 
 
@@ -44,7 +32,7 @@ namespace skcyDMSCataloguing.DAL.Repositories
                                                             Expression<Func<TEntity, bool>> filter = null,
                                                             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
                                                             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> includeproperty = null,
-                                                            bool disableTracking = true
+                                                             bool disableTracking = true
                                                             )
         {
             IQueryable<TEntity> query = _dbSet;
@@ -64,14 +52,9 @@ namespace skcyDMSCataloguing.DAL.Repositories
             { return await query.ToListAsync(); }
         }
 
-        public async Task<IEnumerable<TEntity>> GetByConditionAsync(Expression<Func<TEntity, bool>> expression)
-        {
-            return await _dbSet.Where(expression).ToListAsync();
-        }
 
-
-        public async Task<TEntity> GetByIdAsync(Expression<Func<TEntity, bool>> filter = null,
-                                                string includeProperties = "")
+        public async Task<TEntity> GetByConditionAsync(Expression<Func<TEntity, bool>> filter = null,
+                                                        string includeProperties = "")
         {
             IQueryable<TEntity> query = _dbSet;
 
@@ -82,10 +65,10 @@ namespace skcyDMSCataloguing.DAL.Repositories
             }
 
             query = query.Where(filter).AsNoTracking();
-
-            return await query.FirstOrDefaultAsync();
+             
+            return  await query.FirstOrDefaultAsync();
         }
-
+        
 
         public void Insert(TEntity entity)
         {

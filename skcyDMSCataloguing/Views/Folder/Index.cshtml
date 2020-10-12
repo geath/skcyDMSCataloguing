@@ -16,10 +16,22 @@
                 @Html.DisplayNameFor(model => model.FolderName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FolderDescription)
+                @Html.DisplayNameFor(model => model.CustDataCIFNo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Box)
+                @Html.DisplayNameFor(model => model.CustData.CustomerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustData.CustomerIDN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustData.PrjHelixes1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustData.PrjVelocities1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustData.PrjVelocities2)
             </th>
             <th></th>
         </tr>
@@ -31,10 +43,43 @@
                 @Html.DisplayFor(modelItem => item.FolderName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FolderDescription)
+                @Html.DisplayFor(modelItem => item.CustDataCIFNo)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Box.ID)
+                @Html.DisplayFor(modelItem => item.CustData.CustomerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CustData.CustomerIDN)
+            </td>
+            <td>
+                @{ if (item.CustData.PrjHelixes1 != null)
+
+                        foreach (var hlx in item.CustData.PrjHelixes1)
+                        {
+                            @hlx.Helix1Pool
+                            <br />
+                        }
+                }
+            </td>
+            <td>
+                @{ if (item.CustData.PrjVelocities1 != null)
+
+                        foreach (var vel1 in item.CustData.PrjVelocities1)
+                        {
+                            @vel1.CustDataCIFNo.Any()
+                            <br />
+                        }
+                }
+            </td>
+            <td>
+                @{ if (item.CustData.PrjVelocities2 != null)
+
+                        foreach (var vel2 in item.CustData.PrjVelocities2)
+                        {
+                            @vel2.CustDataCIFNo.Any()
+                            <br />
+                        }
+                }
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

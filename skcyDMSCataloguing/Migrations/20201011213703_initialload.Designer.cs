@@ -10,8 +10,8 @@ using skcyDMSCataloguing.DAL;
 namespace skcyDMSCataloguing.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201009123030_initialmodel")]
-    partial class initialmodel
+    [Migration("20201011213703_initialload")]
+    partial class initialload
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,8 +28,8 @@ namespace skcyDMSCataloguing.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("BoxCreatedBy")
-                        .HasColumnType("int");
+                    b.Property<string>("BoxCreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("BoxCreatorID")
                         .HasColumnType("int");
@@ -78,6 +78,21 @@ namespace skcyDMSCataloguing.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("CustAccountRelationCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustAccountStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustAccountType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustOldAccountNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustRelCifNo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ID");
 
                     b.HasAlternateKey("CustAccountNo");
@@ -120,20 +135,8 @@ namespace skcyDMSCataloguing.Migrations
                     b.Property<int>("CustAccDataID")
                         .HasColumnType("int");
 
-                    b.Property<string>("CustAccountRelationCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustAccountStatus")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustAccountType")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("CustDataID")
                         .HasColumnType("int");
-
-                    b.Property<string>("CustOldAccountNo")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -154,8 +157,8 @@ namespace skcyDMSCataloguing.Migrations
                     b.Property<int>("BoxID")
                         .HasColumnType("int");
 
-                    b.Property<int>("CustDataID")
-                        .HasColumnType("int");
+                    b.Property<string>("CustDataCIFNo")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FolderDescription")
                         .HasColumnType("nvarchar(max)");
@@ -167,7 +170,7 @@ namespace skcyDMSCataloguing.Migrations
 
                     b.HasIndex("BoxID");
 
-                    b.HasIndex("CustDataID");
+                    b.HasIndex("CustDataCIFNo");
 
                     b.ToTable("Folder");
                 });
@@ -260,9 +263,8 @@ namespace skcyDMSCataloguing.Migrations
 
                     b.HasOne("skcyDMSCataloguing.Models.CustData", "CustData")
                         .WithMany("Folders")
-                        .HasForeignKey("CustDataID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustDataCIFNo")
+                        .HasPrincipalKey("CIFNo");
                 });
 
             modelBuilder.Entity("skcyDMSCataloguing.Models.PrjHelix1", b =>

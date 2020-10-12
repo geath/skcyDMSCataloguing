@@ -15,7 +15,7 @@ namespace skcyDMSCataloguing.Models
         public int BoxID { get; set; }
         public Box Box { get; set; }
 
-        public int CustDataID { get; set; }
+        public string CustDataCIFNo { get; set; }
         public CustData CustData { get; set; }
     }
 }
