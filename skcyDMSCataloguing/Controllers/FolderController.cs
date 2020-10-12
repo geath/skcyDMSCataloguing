@@ -66,6 +66,7 @@ namespace skcyDMSCataloguing.Controllers
                         FolderName = "",
                         FolderDescription="",
                         CustDataCIFNo=""
+                        
                     };
                     return View("CreateFromBox", foldertocreate);
                 }
@@ -163,15 +164,16 @@ namespace skcyDMSCataloguing.Controllers
 
             try
             {
+                ViewData["BoxID"] = folder.BoxID;
 
                 baseAsyncFolderRepo.Delete(folder);
                 await baseAsyncFolderRepo.SaveAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Box", action = "Index", id = folder.BoxID }));
             }
             catch (DbUpdateException /* dex */)
             {
                 //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
-                return RedirectToAction("Delete", new { id = id, saveChangesError = true });
+                return RedirectToAction("Delete", new { ID = id, saveChangesError = true });
             }
         }
     }
