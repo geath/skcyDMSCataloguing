@@ -33,8 +33,10 @@ namespace skcyDMSCataloguing
             services.AddScoped<IBaseAsyncRepo<Box>, BaseAsyncRepo<Box>>();
             services.AddScoped<IBaseAsyncRepo<Folder>, BaseAsyncRepo<Folder>>();
             services.AddScoped<IBaseAsyncRepo<BoxCreator>, BaseAsyncRepo<BoxCreator>>();
+            services.AddScoped<IBaseAsyncRepo<CustData>, BaseAsyncRepo<CustData>>();
+            services.AddScoped<IBaseAsyncRepo<CustAccData>, BaseAsyncRepo<CustAccData>>();
+            services.AddScoped<IBaseAsyncRepo<CustRelData>, BaseAsyncRepo<CustRelData>>();
 
-            
             services.AddControllersWithViews();
             services.AddHttpContextAccessor();
 

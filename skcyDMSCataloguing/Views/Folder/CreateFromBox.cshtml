@@ -8,6 +8,20 @@
 
 <h4>Folder</h4>
 <hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="GetRelatedCif" method="get">
+            <div class="form-group">
+                <label for="AccountNo" class="control-label">Account No</label><br>
+                <input type="text" id="AccountNo" name="AccountNo" value=""><br>
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>    
+</div>
+
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">

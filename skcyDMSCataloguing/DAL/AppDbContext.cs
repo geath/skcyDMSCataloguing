@@ -49,8 +49,8 @@ namespace skcyDMSCataloguing.DAL
             modelBuilder.Entity<CustData>()
                 .HasAlternateKey(cd => cd.CIFNo);
 
-            modelBuilder.Entity<CustAccData>()
-                .HasAlternateKey(cad => cad.CustAccountNo);
+            //modelBuilder.Entity<CustAccData>()
+            //    .HasAlternateKey(cad => cad.CustAccountNo);
 
            
             modelBuilder.Entity<CustRelData>()

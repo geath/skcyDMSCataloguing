@@ -10,8 +10,8 @@ using skcyDMSCataloguing.DAL;
 namespace skcyDMSCataloguing.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201011213703_initialload")]
-    partial class initialload
+    [Migration("20201014075231_initialload1")]
+    partial class initialload1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -75,8 +75,7 @@ namespace skcyDMSCataloguing.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CustAccountNo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustAccountRelationCode")
                         .HasColumnType("nvarchar(max)");
@@ -94,8 +93,6 @@ namespace skcyDMSCataloguing.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
-
-                    b.HasAlternateKey("CustAccountNo");
 
                     b.ToTable("BankAccount");
                 });
