@@ -13,12 +13,7 @@ namespace skcyDMSCataloguing.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CustAccountNo = table.Column<string>(nullable: false),
-                    CustRelCifNo = table.Column<string>(nullable: true),
-                    CustOldAccountNo = table.Column<string>(nullable: true),
-                    CustAccountType = table.Column<string>(nullable: true),
-                    CustAccountStatus = table.Column<string>(nullable: true),
-                    CustAccountRelationCode = table.Column<string>(nullable: true)
+                    CustAccountNo = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,24 +80,28 @@ namespace skcyDMSCataloguing.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CustDataID = table.Column<int>(nullable: false),
-                    CustAccDataID = table.Column<int>(nullable: false)
+                    CustOldAccountNo = table.Column<string>(nullable: true),
+                    CustAccountType = table.Column<string>(nullable: true),
+                    CustAccountStatus = table.Column<string>(nullable: true),
+                    CustAccountRelationCode = table.Column<string>(nullable: true),
+                    CustCIFNo = table.Column<string>(nullable: true),
+                    CustAccountNo = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CustomerAccount", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_CustomerAccount_BankAccount_CustAccDataID",
-                        column: x => x.CustAccDataID,
+                        name: "FK_CustomerAccount_BankAccount_CustAccountNo",
+                        column: x => x.CustAccountNo,
                         principalTable: "BankAccount",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CustAccountNo",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_CustomerAccount_Customer_CustDataID",
-                        column: x => x.CustDataID,
+                        name: "FK_CustomerAccount_Customer_CustCIFNo",
+                        column: x => x.CustCIFNo,
                         principalTable: "Customer",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CIFNo",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -197,14 +196,14 @@ namespace skcyDMSCataloguing.Migrations
                 column: "BoxCreatorID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomerAccount_CustAccDataID",
+                name: "IX_CustomerAccount_CustAccountNo",
                 table: "CustomerAccount",
-                column: "CustAccDataID");
+                column: "CustAccountNo");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomerAccount_CustDataID",
+                name: "IX_CustomerAccount_CustCIFNo",
                 table: "CustomerAccount",
-                column: "CustDataID");
+                column: "CustCIFNo");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Folder_BoxID",

@@ -49,19 +49,21 @@ namespace skcyDMSCataloguing.DAL
             modelBuilder.Entity<CustData>()
                 .HasAlternateKey(cd => cd.CIFNo);
 
-            //modelBuilder.Entity<CustAccData>()
-            //    .HasAlternateKey(cad => cad.CustAccountNo);
+            modelBuilder.Entity<CustAccData>()
+                .HasAlternateKey(cad => cad.CustAccountNo);
 
-           
+
             modelBuilder.Entity<CustRelData>()
                 .HasOne(crd => crd.CustData)
                 .WithMany(cd => cd.CustRelDataEntries)
-                .HasForeignKey(crd => crd.CustDataID);
+                .HasForeignKey(crd => crd.CustCIFNo)
+                .HasPrincipalKey(cd=>cd.CIFNo);
 
             modelBuilder.Entity<CustRelData>()
                 .HasOne(crd => crd.CustAccData)
                 .WithMany(cad => cad.CustRelDataEntries)
-                .HasForeignKey(crd => crd.CustAccDataID);
+                .HasForeignKey(crd => crd.CustAccountNo)
+                .HasPrincipalKey(cad=>cad.CustAccountNo);
 
             modelBuilder.Entity<Folder>()
                .HasOne(fld => fld.CustData)

@@ -77,7 +77,7 @@ namespace skcyDMSCataloguing.Controllers
 
             var acc = await baseAsyncCustAccRepo.GetByConditionAsync(filter: ac => ac.CustAccountNo == accountno, includeProperties: "CustRelDataEntries");
 
-            var accountcifs = new HashSet<int>(acc.CustRelDataEntries.Select(cf => cf.CustDataID));
+            var accountcifs = new HashSet<string>(acc.CustRelDataEntries.Select(cf => cf.CustCIFNo));
 
             ViewData["AccountNo"] = acc.CustAccountNo;
 
@@ -86,11 +86,10 @@ namespace skcyDMSCataloguing.Controllers
             foreach (var cif in allcifs)
             {
                 viewModel.Add(new AssignedAccountData
-                {
-                    CIFID = cif.ID,
+                {                    
                     CIFNo = cif.CIFNo,
                     CIFCustomerName = cif.CustomerName,
-                    Assigned = accountcifs.Contains(cif.ID)
+                    Assigned = accountcifs.Contains(cif.CIFNo)
                 });
             }
 
@@ -103,12 +102,12 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: FolderController/Create
-        public async Task<ActionResult> Create(int? boxid, string? accno, string? cifno)
+        public async Task<ActionResult> Create(int? boxid)
         {
             ViewData["BoxID"] = boxid;
             TempData["BoxID"]= boxid;            
 
-            if (boxid != null && (accno == null || accno ==""))
+            if (boxid != null)
             {
                 var folderreltoboxid = await baseAsyncFolderRepo.GetAllAsync(b => b.BoxID == boxid, orderBy: q => q.OrderByDescending(q => q.ID));
 
@@ -117,15 +116,15 @@ namespace skcyDMSCataloguing.Controllers
                     Folder foldertocreate = new Folder
                     {
                         BoxID = boxid ?? 0,
-                        FolderName = "",
-                        FolderDescription="",
-                        CustDataCIFNo=""
-                        
+                        FolderName = "",      //Folder's Barcode
+                        FolderDescription ="",
+                        CustDataCIFNo= ""  //CIF Number
+
                     };
                     return View("CreateFromBox", foldertocreate);
                 }
                 return View("CreateFromBox", folderreltoboxid.FirstOrDefault());            
-            }                      
+            }                          
 
             return View();
         }

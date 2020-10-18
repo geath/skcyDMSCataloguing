@@ -1,36 +1,31 @@
 ﻿@model IEnumerable<skcyDMSCataloguing.ViewModels.AssignedAccountData>
 
-
-
-
 <h1>Get Related Cif's For The Account:  @ViewData["AccountNo"]</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CIFNo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CIFCustomerName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CIFNo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CIFCustomerName)
-            </td>
-            <td>
-                <a asp-action="Create" asp-route-boxid="@ViewData["BoxID"] ">Select</a>
-            </td>
-        </tr>
-}
-        </tbody>
-</table>
+<form asp-action="create" asp-route-boxid="@ViewData["BoxID"]" asp-route-cif="">
+     
+        <div class="form-check">
+            <table class="table-responsive">
+                <tr>
+                    @{
+
+                        foreach (var cif in Model)
+                        {
+
+                            {
+                            @:</tr><tr>
+                            }
+                            @:<td>                 
+                                  <label for=" CIFNo">CIFNo: @cif.CIFNo - CIFName: @cif.CIFCustomerName </label>
+                                <input type="radio" class="alert-primary" size="80" name="CIFNo" value=" @cif.CIFNo" /><br />
+                            @:</td>
+                        }
+                    @:</tr>
+                    }
+                </table>
+            </div>
+         
+        <input type="submit" value="Submit">
+    </form>
+
+
