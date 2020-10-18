@@ -12,6 +12,7 @@ namespace skcyDMSCataloguing.ViewModels
         public string CIFNo { get; set; }
         public string CIFCustomerName { get; set; }
         public bool Assigned { get; set; }
+        public int BoxID { get; set; }
         
     }
 }

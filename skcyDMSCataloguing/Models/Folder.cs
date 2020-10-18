@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace skcyDMSCataloguing.Models
         public int BoxID { get; set; }
         public Box Box { get; set; }
 
+        [Required]
         public string CustDataCIFNo { get; set; }
         public CustData CustData { get; set; }
     }

@@ -68,9 +68,11 @@ namespace skcyDMSCataloguing.Controllers
         }
 
 
-       
-        public async Task<ActionResult> GetRelatedCif(string accountno)
+       [HttpGet]
+        public async Task<ActionResult> GetRelatedCif(int boxid,string accountno)
         {
+            int a = boxid;    
+
             if (accountno == null || accountno == "") { return NotFound(); }
 
             var allcifs = await baseAsyncCustDataRepo.GetAllAsync();
@@ -88,26 +90,27 @@ namespace skcyDMSCataloguing.Controllers
                 viewModel.Add(new AssignedAccountData
                 {                    
                     CIFNo = cif.CIFNo,
-                    CIFCustomerName = cif.CustomerName,
-                    Assigned = accountcifs.Contains(cif.CIFNo)
+                    CIFCustomerName = cif.CustomerName??"",
+                    Assigned = accountcifs.Contains(cif.CIFNo),
+                    BoxID=boxid
                 });
             }
 
-            ViewData["BoxID"] = TempData["BoxID"];
 
-            return View("GetRelatedCif", viewModel.Where(a => a.Assigned == true).ToList());
+            var model = viewModel.Where(a => a.Assigned == true).ToList();
+
+            return View("GetRelatedCif", model);
         }
 
-
-
-
-        // GET: FolderController/Create
-        public async Task<ActionResult> Create(int? boxid)
+      
+            // GET: FolderController/Create
+            public async Task<ActionResult> Create(int? boxid ,string CIFNo)
         {
             ViewData["BoxID"] = boxid;
-            TempData["BoxID"]= boxid;            
+            TempData["BoxID"]= boxid;
+            
 
-            if (boxid != null)
+            if (boxid != null && string.IsNullOrEmpty(CIFNo))
             {
                 var folderreltoboxid = await baseAsyncFolderRepo.GetAllAsync(b => b.BoxID == boxid, orderBy: q => q.OrderByDescending(q => q.ID));
 
@@ -124,7 +127,30 @@ namespace skcyDMSCataloguing.Controllers
                     return View("CreateFromBox", foldertocreate);
                 }
                 return View("CreateFromBox", folderreltoboxid.FirstOrDefault());            
-            }                          
+            }    
+            
+            else 
+            {                  
+                if (boxid != null && (CIFNo!=null || CIFNo!=""))
+                {
+                    var folderreltoboxid = await baseAsyncFolderRepo.GetAllAsync(b => b.BoxID == boxid, orderBy: q => q.OrderByDescending(q => q.ID));
+
+                    if (folderreltoboxid.FirstOrDefault() != null)
+                    {
+                        Folder foldertocreate = new Folder
+                        {
+                            BoxID = boxid ?? 0,
+                            FolderName = "",      //Folder's Barcode
+                            FolderDescription = "",
+                            CustDataCIFNo = CIFNo  //CIF Number
+
+                        };
+                        return View("CreateFromBox", foldertocreate);
+                    }
+                    return View("CreateFromBox", folderreltoboxid.FirstOrDefault());
+                }
+            }
+
 
             return View();
         }
@@ -134,6 +160,10 @@ namespace skcyDMSCataloguing.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind("FolderName,FolderDescription,BoxID,CustDataCIFNo")] Folder folder) 
         {
+            var fex = await baseAsyncFolderRepo.GetAllAsync(m => m.BoxID == folder.BoxID);
+            var awe = new HashSet<string>(fex.Select(c => c.CustDataCIFNo));
+            if (awe.Contains(folder.CustDataCIFNo)) { return RedirectToAction("Error", "Home"); }
+
             try
             {
 

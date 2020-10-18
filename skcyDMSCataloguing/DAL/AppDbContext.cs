@@ -89,10 +89,11 @@ namespace skcyDMSCataloguing.DAL
                .HasForeignKey(vl2 => vl2.CustDataCIFNo)
                .HasPrincipalKey(cd => cd.CIFNo);
 
-
             modelBuilder.Entity<Box>()
                 .Property(b => b.DateBoxCreated)
                 .HasDefaultValueSql("getdate()");
+
+
 
         }
 

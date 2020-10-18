@@ -1,31 +1,37 @@
 ﻿@model IEnumerable<skcyDMSCataloguing.ViewModels.AssignedAccountData>
-
+@{ 
+    string boxid = Model.Select(m => m.BoxID).FirstOrDefault().ToString();
+}
 <h1>Get Related Cif's For The Account:  @ViewData["AccountNo"]</h1>
 
-<form asp-action="create" asp-route-boxid="@ViewData["BoxID"]" asp-route-cif="">
+<form asp-action="create" method="get"  >
      
-        <div class="form-check">
-            <table class="table-responsive">
-                <tr>
-                    @{
+    <div class="form-check">
+      <input type="hidden" asp-for="@boxid" />
+        <table class="table-responsive">
+            <tr>
+                @{
 
-                        foreach (var cif in Model)
+                    foreach (var cif in Model)
+                    {
+
                         {
-
-                            {
-                            @:</tr><tr>
-                            }
-                            @:<td>                 
-                                  <label for=" CIFNo">CIFNo: @cif.CIFNo - CIFName: @cif.CIFCustomerName </label>
-                                <input type="radio" class="alert-primary" size="80" name="CIFNo" value=" @cif.CIFNo" /><br />
-                            @:</td>
+                        @:</tr><tr>
                         }
-                    @:</tr>
+                        @:<td>
+                            <label for=" CIFNo">CIFNo: @cif.CIFNo - CIFName: @cif.CIFCustomerName </label>
+                            <input type="radio" class="alert-primary" size="80" name="CIFNo" value=" @cif.CIFNo" /><br />                           
+                        @:</td>
                     }
-                </table>
-            </div>
-         
+                @:</tr>
+                }
+            </table>
+        </div>         
+    
         <input type="submit" value="Submit">
     </form>
+<div>
+    <a asp-controller="Box" asp-action="Index" asp-route-ID="@ViewData["BoxID"]">Back to List</a>
+</div>
 
 

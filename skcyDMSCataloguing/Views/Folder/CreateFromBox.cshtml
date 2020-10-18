@@ -12,6 +12,7 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="GetRelatedCif" method="get">
+            <input type="hidden" asp-for="BoxID" asp-items="@ViewData["BoxID"]" />
             <div class="form-group">
                 <label for="AccountNo" class="control-label">Account No</label><br>
                 <input type="text" id="AccountNo" name="AccountNo" value=""><br>
