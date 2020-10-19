@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -36,7 +37,7 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: FolderController
-        public async Task<ActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var query = await baseAsyncFolderRepo.GetAllAsync(includeproperty: source=>source
                                 .Include(cd=>cd.CustData)
@@ -48,13 +49,10 @@ namespace skcyDMSCataloguing.Controllers
                                     );
 
             return View(query);
-        }
-
-
-      
+        }      
 
             // GET: FolderController/Details/5
-            public async Task<ActionResult> Details(int? id)
+            public async Task<IActionResult> Details(int? id)
         {
             if (id == null) { return NotFound(); }
 
@@ -69,42 +67,55 @@ namespace skcyDMSCataloguing.Controllers
 
 
        [HttpGet]
-        public async Task<ActionResult> GetRelatedCif(int boxid,string accountno)
+        public async Task<IActionResult> GetRelatedCif(int boxid,string accountno, string custidn)
         {
             int a = boxid;    
 
-            if (accountno == null || accountno == "") { return NotFound(); }
-
-            var allcifs = await baseAsyncCustDataRepo.GetAllAsync();
-
-            var acc = await baseAsyncCustAccRepo.GetByConditionAsync(filter: ac => ac.CustAccountNo == accountno, includeProperties: "CustRelDataEntries");
-
-            var accountcifs = new HashSet<string>(acc.CustRelDataEntries.Select(cf => cf.CustCIFNo));
-
-            ViewData["AccountNo"] = acc.CustAccountNo;
-
-            var viewModel = new List<AssignedAccountData>();
-
-            foreach (var cif in allcifs)
+            if (String.IsNullOrEmpty(accountno) && String.IsNullOrEmpty(custidn)) { return NotFound(); }
+            if (!String.IsNullOrEmpty(accountno) &&  String.IsNullOrEmpty(custidn))
             {
-                viewModel.Add(new AssignedAccountData
-                {                    
-                    CIFNo = cif.CIFNo,
-                    CIFCustomerName = cif.CustomerName??"",
-                    Assigned = accountcifs.Contains(cif.CIFNo),
-                    BoxID=boxid
-                });
+                var acc = await baseAsyncCustAccRepo.GetByConditionAsync(filter: ac => ac.CustAccountNo == accountno, includeProperties: "CustRelDataEntries");
+                var allcifs = await baseAsyncCustDataRepo.GetAllAsync();
+                var accountcifs = new HashSet<string>(acc.CustRelDataEntries.Select(cf => cf.CustCIFNo));
+                ViewData["AccountNo"] = acc.CustAccountNo;
+                var viewModel = new List<AssignedAccountData>();
+                foreach (var cif in allcifs)
+                {
+                    viewModel.Add(new AssignedAccountData
+                    {
+                        CIFNo = cif.CIFNo.Trim(),
+                        CIFCustomerName = cif.CustomerName ?? "",
+                        Assigned = accountcifs.Contains(cif.CIFNo),
+                        BoxID = boxid
+                    });
+                }
+                var model = viewModel.Where(a => a.Assigned == true).ToList();
+                return View("GetRelatedCif", model);
             }
 
+            if (String.IsNullOrEmpty(accountno) &&  !String.IsNullOrEmpty(custidn))
+            {
+                var allcifs = await baseAsyncCustDataRepo.GetAllAsync(filter: cd => cd.CustomerIDN == custidn);                              
+                var viewModel = new List<AssignedAccountData>();
+                foreach (var cif in allcifs)
+                {
+                    viewModel.Add(new AssignedAccountData
+                    {
+                        CIFNo = cif.CIFNo.Trim(),
+                        CIFCustomerName = cif.CustomerName ?? "",                       
+                        BoxID = boxid
+                    });
+                }
+                var model = viewModel.ToList();
+                return View("GetRelatedCif", model);
+            }
 
-            var model = viewModel.Where(a => a.Assigned == true).ToList();
-
-            return View("GetRelatedCif", model);
+            return View();
         }
 
       
             // GET: FolderController/Create
-            public async Task<ActionResult> Create(int? boxid ,string CIFNo)
+            public async Task<IActionResult> Create(int? boxid ,string CIFNo)
         {
             ViewData["BoxID"] = boxid;
             TempData["BoxID"]= boxid;
@@ -142,7 +153,7 @@ namespace skcyDMSCataloguing.Controllers
                             BoxID = boxid ?? 0,
                             FolderName = "",      //Folder's Barcode
                             FolderDescription = "",
-                            CustDataCIFNo = CIFNo  //CIF Number
+                            CustDataCIFNo = CIFNo.Trim()  //CIF Number
 
                         };
                         return View("CreateFromBox", foldertocreate);
@@ -158,7 +169,7 @@ namespace skcyDMSCataloguing.Controllers
         // POST: FolderController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind("FolderName,FolderDescription,BoxID,CustDataCIFNo")] Folder folder) 
+        public async Task<IActionResult> Create([Bind("FolderName,FolderDescription,BoxID,CustDataCIFNo")] Folder folder) 
         {
             var fex = await baseAsyncFolderRepo.GetAllAsync(m => m.BoxID == folder.BoxID);
             var awe = new HashSet<string>(fex.Select(c => c.CustDataCIFNo));
@@ -179,7 +190,7 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: FolderController/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id==null) { return NotFound(); }
 
@@ -193,7 +204,7 @@ namespace skcyDMSCataloguing.Controllers
         // POST: FolderController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, [Bind("ID,FolderName,BoxID,CustDataCIFNo")] Folder folder)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,FolderName,BoxID,CustDataCIFNo")] Folder folder)
         {
             if (id != folder.ID)
             {
@@ -203,7 +214,7 @@ namespace skcyDMSCataloguing.Controllers
             {
                 baseAsyncFolderRepo.Update(folder);
                 await baseAsyncFolderRepo.SaveAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Box", action = "Index", id = folder.BoxID }));
             }
             catch (DbUpdateException /* dex */)
             {
@@ -216,7 +227,7 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: FolderController/Delete/5
-        public async Task<ActionResult> Delete(int? id, bool? saveChangesError = false)
+        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null) { return NotFound(); }
 
@@ -237,7 +248,7 @@ namespace skcyDMSCataloguing.Controllers
         // POST: FolderController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id, Folder folder)
+        public async Task<IActionResult> Delete(int id, Folder folder)
         {
             var folderToDelete = await baseAsyncFolderRepo.GetByConditionAsync(fld => fld.ID == id);
 
@@ -260,6 +271,16 @@ namespace skcyDMSCataloguing.Controllers
                 //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
                 return RedirectToAction("Delete", new { ID = id, saveChangesError = true });
             }
+        }
+
+        [AcceptVerbs("GET","POST")]
+         public async Task<IActionResult> IsCIFNoUsed(string cifno) 
+        {
+            var cif = await baseAsyncFolderRepo.GetByConditionAsync(f => f.CustDataCIFNo == cifno);
+            
+            if (cif == null) { return Json(true); }
+            else { return Json($"CIFNo {cifno} is already used in box {cif.BoxID}"); }
+            
         }
     }
 }

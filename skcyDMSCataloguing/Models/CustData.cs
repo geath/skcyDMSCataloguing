@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Web;
@@ -9,7 +11,9 @@ namespace skcyDMSCataloguing.Models
     public class CustData
     {
        
-        public int ID {get; set;}
+        public int ID {get; set;}    
+        [Required]
+      
         public string CIFNo {get; set;}
         public string CustomerName {get; set;}
         public string CustomerNo {get; set;}
