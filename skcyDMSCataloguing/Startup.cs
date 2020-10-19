@@ -6,13 +6,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using skcyDMSCataloguing.DAL;
+ 
 using skcyDMSCataloguing.DAL.Repositories;
-using skcyDMSCataloguing.Models;
+ using skcyDMSCataloguing.Models;
 
 namespace skcyDMSCataloguing
 {
@@ -29,6 +31,8 @@ namespace skcyDMSCataloguing
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddIdentity<IdentityUser, IdentityRole>()
+             .AddEntityFrameworkStores<AppDbContext>() ;
 
             services.AddScoped<IBaseAsyncRepo<Box>, BaseAsyncRepo<Box>>();
             services.AddScoped<IBaseAsyncRepo<Folder>, BaseAsyncRepo<Folder>>();
@@ -36,8 +40,11 @@ namespace skcyDMSCataloguing
             services.AddScoped<IBaseAsyncRepo<CustData>, BaseAsyncRepo<CustData>>();
             services.AddScoped<IBaseAsyncRepo<CustAccData>, BaseAsyncRepo<CustAccData>>();
             services.AddScoped<IBaseAsyncRepo<CustRelData>, BaseAsyncRepo<CustRelData>>();
+            
 
             services.AddControllersWithViews();
+            services.AddRazorPages();
+
             services.AddHttpContextAccessor();
 
 
@@ -60,6 +67,8 @@ namespace skcyDMSCataloguing
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
+             
 
             app.UseAuthorization();
 
@@ -68,6 +77,8 @@ namespace skcyDMSCataloguing
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
+
             });
         }
     }
