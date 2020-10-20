@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,7 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: BookController
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors,WebAppViewers")]
         public async Task<ActionResult> Index(int? id, int? folderid)
         {
             var viewmodel = new BoxFolderDocIndexData();
@@ -70,6 +72,7 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: BookController/Create
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Create()
         {
             Box box = new Box();
@@ -120,10 +123,11 @@ namespace skcyDMSCataloguing.Controllers
         {
             return View();
         }
-      
+
 
 
         // GET: BookController/Edit/5
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors")]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -167,6 +171,7 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: BookController/Delete/5
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers")]
         public async Task<ActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
