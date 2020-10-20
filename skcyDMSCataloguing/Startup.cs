@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,12 @@ namespace skcyDMSCataloguing
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddIdentity<IdentityUser, IdentityRole>(options=>
+                    {
+                        options.Password.RequiredLength = 6;
+                        options.Password.RequireNonAlphanumeric = true;
+                    })
+                .AddEntityFrameworkStores<AppDbContext>();
 
             services.AddScoped<IBaseAsyncRepo<Box>, BaseAsyncRepo<Box>>();
             services.AddScoped<IBaseAsyncRepo<Folder>, BaseAsyncRepo<Folder>>();
@@ -61,6 +68,7 @@ namespace skcyDMSCataloguing
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
