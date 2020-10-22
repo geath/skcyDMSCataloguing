@@ -39,6 +39,14 @@ namespace skcyDMSCataloguing
             services.AddIdentity<IdentityUser, IdentityRole>()
              .AddEntityFrameworkStores<AppDbContext>() ;
 
+            //services.ConfigureApplicationCookie(options =>
+            //{                
+            //    options.Cookie.Name = ".skcyDMSCataloguingCookie";
+            //    options.Cookie.HttpOnly = true;
+            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(1);                
+            //    options.SlidingExpiration = true;
+            //});
+
             services.AddScoped<IBaseAsyncRepo<Box>, BaseAsyncRepo<Box>>();
             services.AddScoped<IBaseAsyncRepo<Folder>, BaseAsyncRepo<Folder>>();
             services.AddScoped<IBaseAsyncRepo<BoxCreator>, BaseAsyncRepo<BoxCreator>>();
