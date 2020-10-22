@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +46,14 @@ namespace skcyDMSCataloguing
             services.AddScoped<IBaseAsyncRepo<CustRelData>, BaseAsyncRepo<CustRelData>>();
 
             services.AddControllersWithViews();
+            services.AddRazorPages();
+
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
             services.AddHttpContextAccessor();
 
 

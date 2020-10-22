@@ -52,7 +52,14 @@
     or by calling ```services.AddIdentity<IdentityUser, IdentityRole>(options=>..)``` in Startup class
     [ASP NET core identity password complexity 4:40](https://www.youtube.com/watch?v=kC9qrUcy2Js)
 3 inject to _LayoutView SignInManager & UserManager classes in order to encapsulate login/logout logic 
-
+4 require authenticated user code  ```services.AddAuthorization(options =>) ``` presented in rge Startup class here has an alternative.
+  ```service.AddMvc(options=> {
+                                var policy = new AuthorizationPolicyBuilder()
+                                                  .RequireAuthenticatedUser()
+                                                  .Build(); 
+                                    options.Filters.Add(new AuthorizeFilter(policy));
+                               });```
+  provide ```[AllowAnonymous]``` attribut to login and register methods to avoid falling in an infinite loop
 
 
 
@@ -76,11 +83,13 @@
 7. Create (optional) an events' "classification" class (skcyDMSTeamsEvent) to register events with an EventID
 
 
-
-
+ # Tools
+ [URL Decoder/Encoder] (https://meyerweb.com/eric/tools/dencoder/)
 
 # Suggested Learning Resources 
 1 Aplicable to A1-3
    - [Entity Mappings using Fluent API in EF 6](https://www.entityframeworktutorial.net/code-first/configure-entity-mappings-using-fluent-api.aspx)
    - [Configuring and Mapping Properties and Types](https://docs.microsoft.com/en-us/ef/ef6/modeling/code-first/fluent/types-and-properties)
    - [ASP NET Core Identity tutorial from scratch] (https://www.youtube.com/watch?v=egITMrwMOPU&list=PL6n9fhu94yhVkdrusLaQsfERmL_Jh4XmU&index=65)
+
+

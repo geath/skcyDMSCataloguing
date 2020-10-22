@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using skcyDMSCataloguing.ViewModels;
@@ -21,7 +22,7 @@ namespace skcyDMSCataloguing.Controllers
             this.signInManager = signInManager;
         }
 
-        [HttpPost]
+        [HttpPost]        
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
@@ -29,12 +30,14 @@ namespace skcyDMSCataloguing.Controllers
         }
 
        [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -59,12 +62,14 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
