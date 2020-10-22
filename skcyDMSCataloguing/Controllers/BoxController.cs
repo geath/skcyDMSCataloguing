@@ -45,7 +45,7 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: BookController
-        [AllowAnonymous]
+        //[AllowAnonymous]
         // [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors,WebAppViewers")]
         public async Task<ActionResult> Index(int? id, int? folderid)
         {
@@ -83,8 +83,8 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: BookController/Details/5
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
 
         public async Task<ActionResult> Details(int? id)
         {
@@ -105,8 +105,8 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: BookController/Create
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Create()
         {
             Box box = new Box();
@@ -117,6 +117,7 @@ namespace skcyDMSCataloguing.Controllers
             box.BoxDescription = "Box." + maxid.ToString();
             box.DateBoxCreated = DateTime.Now;
             box.BoxCreatedBy = currentuser.Substring(currentuser.LastIndexOf('\\') + 1);
+            box.BoxCreatorID = 1;
 
             PopulateBoxCreatorDropDownList();
             return View(box);
@@ -125,8 +126,8 @@ namespace skcyDMSCataloguing.Controllers
         // POST: BookController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Create([Bind("BoxDescription,DateBoxCreated,BoxCreatedBy,BoxCreatorID")] Box box)
         {
             try
@@ -156,8 +157,8 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: BookController/Edit/5
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -178,8 +179,8 @@ namespace skcyDMSCataloguing.Controllers
         // POST: BookController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Edit(int id, [Bind("ID,BoxDescription,DateBoxCreated,BoxCreatedBy,BoxCreatorID")] Box box)
         {
             if (id != box.ID)
@@ -203,8 +204,8 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: BookController/Delete/5
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
@@ -232,8 +233,8 @@ namespace skcyDMSCataloguing.Controllers
         // POST: BookController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Delete(int id, Box box)
         {
             if (box == null)

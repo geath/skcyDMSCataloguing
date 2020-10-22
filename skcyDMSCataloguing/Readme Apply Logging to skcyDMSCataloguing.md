@@ -5,6 +5,7 @@
 -install nuget package NLog.Web.AspNetCore abd create nlog.config
 -update Program.cs by adding at ```Host.CreateDefaultBuilder(args)``` 
 the logging providers by calling ```.ConfigureLogging``` extension method
+--for development only EnableSensitiveDataLogging
  
 
 ## Further Reading - Sources

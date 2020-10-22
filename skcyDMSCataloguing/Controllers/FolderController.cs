@@ -37,8 +37,8 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: FolderController
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> Index()
         {
             var query = await baseAsyncFolderRepo.GetAllAsync(includeproperty: source=>source
@@ -54,8 +54,8 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: FolderController/Details/5
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) { return NotFound(); }
@@ -71,8 +71,8 @@ namespace skcyDMSCataloguing.Controllers
 
 
        [HttpGet]
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> GetRelatedCif(int boxid,string accountno, string custidn)
         {
             int a = boxid;    
@@ -121,8 +121,8 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: FolderController/Create
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> Create(int? boxid ,string CIFNo)
         {
             ViewData["BoxID"] = boxid;
@@ -177,8 +177,8 @@ namespace skcyDMSCataloguing.Controllers
         // POST: FolderController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> Create([Bind("FolderName,FolderDescription,BoxID,CustDataCIFNo")] Folder folder) 
         {
             var fex = await baseAsyncFolderRepo.GetAllAsync(m => m.BoxID == folder.BoxID);
@@ -200,8 +200,8 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: FolderController/Edit/5
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id==null) { return NotFound(); }
@@ -216,8 +216,8 @@ namespace skcyDMSCataloguing.Controllers
         // POST: FolderController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,FolderName,BoxID,CustDataCIFNo")] Folder folder)
         {
             if (id != folder.ID)
@@ -241,8 +241,8 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: FolderController/Delete/5
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null) { return NotFound(); }
@@ -264,8 +264,8 @@ namespace skcyDMSCataloguing.Controllers
         // POST: FolderController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> Delete(int id, Folder folder)
         {
             var folderToDelete = await baseAsyncFolderRepo.GetByConditionAsync(fld => fld.ID == id);

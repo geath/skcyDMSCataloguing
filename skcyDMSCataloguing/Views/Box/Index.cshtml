@@ -15,7 +15,7 @@
             <th> BoxDescription </th>
             <th> DateBoxCreated </th>
             <th> BoxCreatedBy   </th>
-            <th> Box Creator Name </th>
+            @*<th> Box Creator Name </th>*@
             <th></th>
         </tr>
     </thead>
@@ -32,9 +32,9 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.BoxCreatedBy)
                 </td>
-                <td>
+                @*<td>
                     @Html.DisplayFor(modelItem => item.BoxCreator.CreatorName)
-                </td>
+                </td>*@
                 <td>
                     <a asp-action="Index" asp-route-id="@item.ID">Select</a> |
                     <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |                    
