@@ -37,7 +37,8 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: BookController
-        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors,WebAppViewers")]
+        [AllowAnonymous]
+        // [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors,WebAppViewers")]
         public async Task<ActionResult> Index(int? id, int? folderid)
         {
             var viewmodel = new BoxFolderDocIndexData();
@@ -72,7 +73,8 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: BookController/Create
-        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        [AllowAnonymous]
+        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Create()
         {
             Box box = new Box();
@@ -91,6 +93,8 @@ namespace skcyDMSCataloguing.Controllers
         // POST: BookController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Create([Bind("BoxDescription,DateBoxCreated,BoxCreatedBy,BoxCreatorID")] Box box)
         {
             try
@@ -116,9 +120,10 @@ namespace skcyDMSCataloguing.Controllers
         }
 
 
-
-
         // GET: BookController/Details/5
+        [AllowAnonymous]
+        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+
         public ActionResult Details(int id)
         {
             return View();
@@ -127,7 +132,8 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: BookController/Edit/5
-        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors")]
+        [AllowAnonymous]
+        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -148,6 +154,8 @@ namespace skcyDMSCataloguing.Controllers
         // POST: BookController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Edit(int id, [Bind("ID,BoxDescription,DateBoxCreated,BoxCreatedBy,BoxCreatorID")] Box box)
         {
             if (id != box.ID)
@@ -171,7 +179,8 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: BookController/Delete/5
-        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers")]
+        [AllowAnonymous]
+        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
@@ -199,6 +208,8 @@ namespace skcyDMSCataloguing.Controllers
         // POST: BookController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<ActionResult> Delete(int id, Box box)
         {
             if (box == null)
