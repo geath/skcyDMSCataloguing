@@ -16,6 +16,7 @@ using skcyDMSCataloguing.DAL;
  
 using skcyDMSCataloguing.DAL.Repositories;
  using skcyDMSCataloguing.Models;
+using skcyDMSCataloguing.Services;
 
 namespace skcyDMSCataloguing
 {
@@ -31,7 +32,8 @@ namespace skcyDMSCataloguing
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                                                                  .EnableSensitiveDataLogging());
             services.AddAuthentication(IISDefaults.AuthenticationScheme);
 
             services.AddIdentity<IdentityUser, IdentityRole>()
@@ -43,7 +45,8 @@ namespace skcyDMSCataloguing
             services.AddScoped<IBaseAsyncRepo<CustData>, BaseAsyncRepo<CustData>>();
             services.AddScoped<IBaseAsyncRepo<CustAccData>, BaseAsyncRepo<CustAccData>>();
             services.AddScoped<IBaseAsyncRepo<CustRelData>, BaseAsyncRepo<CustRelData>>();
-            
+            services.AddScoped<IGetObjectType, GetObjectType>();
+
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -59,11 +62,12 @@ namespace skcyDMSCataloguing
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                //app.UseDatabaseErrorPage();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
                 app.UseHsts();
             }
             app.UseHttpsRedirection();

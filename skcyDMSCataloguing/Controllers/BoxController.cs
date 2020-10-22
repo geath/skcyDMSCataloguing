@@ -11,10 +11,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using skcyDMSCataloguing.DAL;
 using skcyDMSCataloguing.DAL.Repositories;
 using skcyDMSCataloguing.Models;
+using skcyDMSCataloguing.Services;
 using skcyDMSCataloguing.ViewModels;
 
 
@@ -25,14 +27,20 @@ namespace skcyDMSCataloguing.Controllers
         private readonly IBaseAsyncRepo<Box> baseAsyncBoxRepo;
         private readonly IBaseAsyncRepo<BoxCreator> baseAsyncBoxCreatorRepo;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILogger<Box> logger;
+        private readonly IGetObjectType getObjectType;
 
         public BoxController(IBaseAsyncRepo<Box>  baseAsyncBoxRepo, 
                              IBaseAsyncRepo<BoxCreator> baseAsyncBoxCreatorRepo,
-                             IHttpContextAccessor httpContextAccessor)
+                             IHttpContextAccessor httpContextAccessor,
+                             ILogger<Box> logger,
+                             IGetObjectType getObjectType)
         {
             this.baseAsyncBoxRepo = baseAsyncBoxRepo;
             this.baseAsyncBoxCreatorRepo = baseAsyncBoxCreatorRepo;
             this.httpContextAccessor = httpContextAccessor;
+            this.logger = logger;
+            this.getObjectType = getObjectType;
         }
 
 
@@ -70,6 +78,30 @@ namespace skcyDMSCataloguing.Controllers
             }
 
             return View(viewmodel);
+        }
+
+
+
+        // GET: BookController/Details/5
+        [AllowAnonymous]
+        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+
+        public async Task<ActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                TempData["ResourceName"] = getObjectType.GetObjectName<Box>();
+                return RedirectToAction("StatusCodeErrorHandler", "Error", new { statusCode = 452 });
+            }
+
+            var query = await baseAsyncBoxRepo.GetByConditionAsync(filter: b => b.ID == id, includeProperties: "Folders");
+            if (query == null)
+            {
+                TempData["ResourceName"] = getObjectType.GetObjectName<Box>();
+                TempData["ResourceId"] = id;
+                return RedirectToAction("StatusCodeErrorHandler", "Error", new { statusCode = 404 });
+            }
+            return View(query);
         }
 
         // GET: BookController/Create
@@ -120,14 +152,6 @@ namespace skcyDMSCataloguing.Controllers
         }
 
 
-        // GET: BookController/Details/5
-        [AllowAnonymous]
-        //[Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
-
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
 
 
