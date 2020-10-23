@@ -22,12 +22,7 @@ namespace skcyDMSCataloguing.Controllers
             this.signInManager = signInManager;
         }
 
-        [HttpPost]        
-        public async Task<IActionResult> Logout()
-        {
-            await signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
+    
 
        [HttpGet]
         [AllowAnonymous]
@@ -92,6 +87,13 @@ namespace skcyDMSCataloguing.Controllers
                      * it was the case in register method */              
             }
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }
