@@ -33,7 +33,7 @@ namespace skcyDMSCataloguing
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
-                                                                  .EnableSensitiveDataLogging());
+                                                                  /*.EnableSensitiveDataLogging()*/);
             services.AddAuthentication(IISDefaults.AuthenticationScheme);
 
             services.AddIdentity<IdentityUser, IdentityRole>()

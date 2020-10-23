@@ -80,7 +80,7 @@ namespace skcyDMSCataloguing.Controllers
             if (String.IsNullOrEmpty(accountno) && String.IsNullOrEmpty(custidn)) { return NotFound(); }
             if (!String.IsNullOrEmpty(accountno) &&  String.IsNullOrEmpty(custidn))
             {
-                var acc = await baseAsyncCustAccRepo.GetByConditionAsync(filter: ac => ac.CustAccountNo == accountno, includeProperties: "CustRelDataEntries");
+                var acc = await baseAsyncCustAccRepo.GetByConditionAsync(filter: ac => ac.CustAccountNo== accountno, includeProperties: "CustRelDataEntries");
                 var allcifs = await baseAsyncCustDataRepo.GetAllAsync();
                 var accountcifs = new HashSet<string>(acc.CustRelDataEntries.Select(cf => cf.CustCIFNo));
                 ViewData["AccountNo"] = acc.CustAccountNo;
