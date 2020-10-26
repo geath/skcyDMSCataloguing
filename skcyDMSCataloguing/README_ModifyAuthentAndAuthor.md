@@ -16,23 +16,27 @@ The bellow presented workflow implements Identity from scratch without using the
 5. Add code in <span style="color:blue">**ConfigureServicess** method</span> to set the sql database provider as the store for authentication's tables and data
             ```services.AddIdentity<IdentityUser, IdentityRole>()
                       .AddEntityFrameworkStores<AppDbContext>();```
+    
     ```
-        
+    
+    ```
+    
 5. Install Nuget package and run migrations 
     ```Install-Package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore
       Add-Migration MigrationsName
       Update-Database 
+    ```
 ```
     
 6. Update the Startup class 
    - in <span style="color:blue">**ConfigureServicess** method</span> add 
         ```services.AddControllersWithViews();
            services.AddRazorPages(); 
-        ```
-        
+```
+
    - in <span style="color:blue">**Configure** method</span> add  to the app.UseEndpoints
         ```endpoints.MapRazorPages();```
-   
+
    
 
 ## A.I Add Custom User Data to identity
@@ -61,6 +65,7 @@ The bellow presented workflow implements Identity from scratch without using the
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });     
+      ```
 ```
       
       [Source: Microsoft Docs](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/scaffold-identity?view=aspnetcore-3.1&tabs=visual-studio#scaffold-identity-into-an-mvc-project-without-existing-authorization)
@@ -74,23 +79,62 @@ The bellow presented workflow implements Identity from scratch without using the
                         options.FallbackPolicy = new AuthorizationPolicyBuilder()
                             .RequireAuthenticatedUser()
                             .Build();
-            }); ```
+            }); 
+```
+
    [Source: Microsoft Docs](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/secure-data?view=aspnetcore-3.1#rau)
-   an alternative using ```services.Configure<IdentityOptions>(options=>..)``` is presented in
+   An alternative using ```services.Configure<IdentityOptions>(options=>..)``` is presented in
    [ASP NET core identity password complexity 4:40](https://www.youtube.com/watch?v=kC9qrUcy2Js)
-       ```
 
+- **Remote Validation** 
 
+  
 
 ## B2. Create Controller and Views
 
 1. Create appropriate ViewModels (e.g. RegisterViewModel) and build the AccountController 
 2. Modify(optional) the password complexity either by calling ```services.Configure<IdentityOptions>(options=>..)``` in Startup class
    or by calling ```services.AddIdentity<IdentityUser, IdentityRole>(options=>..)``` in Startup class    
-3. Inject to _LayoutView SignInManager & UserManager classes in order to encapsulate login/logout logic 
+3. Inject  <span style="color:blue">**_Layout** view</span>  with  `SignInManager<IdentityUser>`   in order to encapsulate login/logout logic 
 4. Decorate login and register methods with ```[AllowAnonymous]``` attribute to  to avoid falling in an infinite loop
 
 
+
+#  C .  How to 
+
+- Update Related Data using checkbox
+
+  [Microsoft Docs](https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/update-related-data?view=aspnetcore-3.1)
+
+  [PragimTech](https://www.youtube.com/watch?v=TzhqymQm5kw&list=PL6n9fhu94yhVkdrusLaQsfERmL_Jh4XmU&index=81)
+
+- Add icons 
+
+  [fontawesome](https://fontawesome.com/)
+
+- Add navbar DropDown Menu
+
+  [PragimTech V84](https://www.youtube.com/watch?v=OMX0UiLpMSA&list=PL6n9fhu94yhVkdrusLaQsfERmL_Jh4XmU&index=84)
+
+- Stay at the logged account when register new user
+
+  [PragimTech](https://www.youtube.com/watch?v=OMX0UiLpMSA&list=PL6n9fhu94yhVkdrusLaQsfERmL_Jh4XmU&index=84)
+
+- wrap delete actions to form element with post method when rendered in an index view 
+
+  [Pragimtech v86](https://www.youtube.com/watch?v=MhNfyZGfY-A&list=PL6n9fhu94yhVkdrusLaQsfERmL_Jh4XmU&index=86)
+  
+- Get List of Entity Models in DbContext Entity Framework Core & return Relationships
+
+  `var key = _context.Model.GetEntityTypes().Select(l => l.ClrType).ToList();`  
+
+  `var key = _context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.FirstOrDefault();`
+
+  `var foreignkeys = key.GetContainingPrimaryKey().GetReferencingForeignKeys();`
+
+  [StackOverflow: Get Foreign Keys](https://stackoverflow.com/questions/54187848/get-list-of-entity-models-in-dbcontext-entity-framework-core-2-1)
+
+  [StackOverflow : Get Entities in a Model](https://stackoverflow.com/questions/54187848/get-list-of-entity-models-in-dbcontext-entity-framework-core-2-1)
 
 
 

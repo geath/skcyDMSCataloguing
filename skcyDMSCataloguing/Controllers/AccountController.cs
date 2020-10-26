@@ -43,6 +43,10 @@ namespace skcyDMSCataloguing.Controllers
 
                 if (result.Succeeded)
                 {
+                    if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        return RedirectToAction("ListOfUsers", "Administration");
+                    }
                     // sign in the created user creating a session cookie (isPersistent:false)
                     await signInManager.SignInAsync(user, isPersistent:false);
                     return RedirectToAction("Index", "Home");
@@ -90,10 +94,20 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         [HttpPost]
+
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
     }
 }

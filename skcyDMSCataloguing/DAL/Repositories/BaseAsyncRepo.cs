@@ -28,6 +28,7 @@ namespace skcyDMSCataloguing.DAL.Repositories
 
 
 
+
         public async Task<IEnumerable<TEntity>> GetAllAsync(
                                                             Expression<Func<TEntity, bool>> filter = null,
                                                             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
@@ -35,6 +36,7 @@ namespace skcyDMSCataloguing.DAL.Repositories
                                                              bool disableTracking = true
                                                             )
         {
+          
             IQueryable<TEntity> query = _dbSet;
 
             if (disableTracking)

@@ -95,9 +95,8 @@ namespace skcyDMSCataloguing.DAL
                 .Property(b => b.DateBoxCreated)
                 .HasDefaultValueSql("getdate()");
 
-
-
-        }
+           
+        }        
 
     }
 }
