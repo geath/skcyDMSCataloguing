@@ -16,7 +16,7 @@ The bellow presented workflow implements Identity from scratch without using the
 5. Add code in <span style="color:blue">**ConfigureServicess** method</span> to set the sql database provider as the store for authentication's tables and data
             ```services.AddIdentity<IdentityUser, IdentityRole>()
                       .AddEntityFrameworkStores<AppDbContext>();```
-    
+        
     ```
     
     ```
@@ -98,6 +98,11 @@ The bellow presented workflow implements Identity from scratch without using the
 3. Inject  <span style="color:blue">**_Layout** view</span>  with  `SignInManager<IdentityUser>`   in order to encapsulate login/logout logic 
 4. Decorate login and register methods with ```[AllowAnonymous]``` attribute to  to avoid falling in an infinite loop
 
+## B3. Claims Based Authorization
+
+1. Create Claims Policy
+2. Use the Policy for Authorization
+
 
 
 #  C .  How to 
@@ -112,7 +117,7 @@ The bellow presented workflow implements Identity from scratch without using the
 
   [fontawesome](https://fontawesome.com/)
 
-- Add navbar DropDown Menu
+- Add navbar Drop-Down Menu
 
   [PragimTech V84](https://www.youtube.com/watch?v=OMX0UiLpMSA&list=PL6n9fhu94yhVkdrusLaQsfERmL_Jh4XmU&index=84)
 
@@ -150,4 +155,6 @@ The bellow presented workflow implements Identity from scratch without using the
 
 [Recommended Tutorial by PluralSight : Authentication and Authorization in ASP.NET Core ] (https://www.pluralsight.com/courses/authentication-authorization-aspnet-core)
 
+[Policy-Based Authorization in ASP.NET Core](https://docs.microsoft.com/en-us/archive/msdn-magazine/2017/october/cutting-edge-policy-based-authorization-in-asp-net-core)
 
+[Andrew Lock: Custom authorisation policies and requirements in ASP.NET Core](https://andrewlock.net/custom-authorisation-policies-and-requirements-in-asp-net-core/)

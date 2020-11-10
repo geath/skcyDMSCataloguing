@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,11 +11,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using skcyDMSCataloguing.Models;
 using skcyDMSCataloguing.ViewModels;
 
 namespace skcyDMSCataloguing.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Policy ="AdminRolePolicy")]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
@@ -21,7 +24,7 @@ namespace skcyDMSCataloguing.Controllers
         private readonly ILogger<AdministrationController> logger;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,
-                                        UserManager<IdentityUser> userManager,
+                                        UserManager<IdentityUser> userManager,                                        
                                         ILogger<AdministrationController> logger)
         {
             this.roleManager = roleManager;
@@ -29,8 +32,71 @@ namespace skcyDMSCataloguing.Controllers
             this.logger = logger;
         }
 
-        #region Roles
+        #region Claims
         [HttpGet]
+        public async Task<IActionResult> ManageUserClaims(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"UserID: {userId} can't be found";
+                return View("NotFound");
+            }
+
+            var existingUserClaims = await userManager.GetClaimsAsync(user);
+            var model = new UserClaimsViewModel
+            {
+                UserId = user.Id
+            };
+
+            foreach (Claim claim in ClaimsStore.AllClaims)
+            {
+                UserClaim userClaim = new UserClaim
+                {
+                    ClaimType = claim.Type
+                };
+                if (existingUserClaims.Any(c => c.Type == claim.Type && c.Value=="true"))
+                    { userClaim.IsSelected = true;}
+                model.Claims.Add(userClaim);
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ManageUserClaims(UserClaimsViewModel model,string userId)
+        {
+            var user = await userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"UserID: {model.UserId} can't be found";
+                return View("NotFound");
+            }
+
+            var claims = await userManager.GetClaimsAsync(user);
+            var result = await userManager.RemoveClaimsAsync(user, claims);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Can't remove claims");
+                return View(model);
+            }
+
+            result = await userManager.AddClaimsAsync(user,
+                        model.Claims.Select(c => new Claim(c.ClaimType, c.IsSelected ? "true" : "false")));
+            
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Can't add claims to the user");
+                return View(model);
+            }
+
+            return RedirectToAction("EditUser", new { id = model.UserId }); 
+        }
+
+
+            #endregion
+
+            #region Roles
+            [HttpGet]
         public IActionResult ListOfRoles()
         {
             var roles = roleManager.Roles;
@@ -188,6 +254,7 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy ="DeleteRolePolicy")]
         public async Task<ActionResult> DeleteRole(string id)
         {
             var roletodelete = await roleManager.FindByIdAsync(id);
@@ -309,7 +376,7 @@ namespace skcyDMSCataloguing.Controllers
                 Id = usertoedit.Id,
                 UserEmail = usertoedit.Email,
                 UserName = usertoedit.UserName,
-                Claims = userClaims.Select(c=>c.Value).ToList(),
+                Claims = userClaims.Select(c=>c.Type + " : " + c.Value).ToList(),
                 Roles= userRoles
             };
 

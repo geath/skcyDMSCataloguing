@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,7 +35,7 @@ namespace skcyDMSCataloguing
             services.AddIdentity<IdentityUser, IdentityRole>(options=>
                     {
                         options.Password.RequiredLength = 6;
-                        options.Password.RequireNonAlphanumeric = true;
+                        options.Password.RequireNonAlphanumeric = true;                        
                     })
                 .AddEntityFrameworkStores<AppDbContext>();
 
@@ -48,11 +49,55 @@ namespace skcyDMSCataloguing
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+
+            services.ConfigureApplicationCookie(options =>
+                 {
+                     options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                     options.Cookie.Name = "skcyDMSCataloguingCookie";
+                     options.LoginPath = "/Account/Login";
+                     options.SlidingExpiration = true;
+                 }
+                ) ;
+
             services.AddAuthorization(options =>
             {
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
+                options.AddPolicy("AdminRolePolicy",
+                        policy => policy.RequireRole("Admin"));
+                options.AddPolicy("DeleteRolePolicy",
+                        policy => policy.RequireClaim("Delete Role" ,"true"));
+                
+                //  custom authorization policy using func
+                options.AddPolicy("EditUserPolicy",
+                        policy => policy.RequireAssertion(context =>
+                            context.User.IsInRole("Admin") && 
+                            context.User.HasClaim(claim=>claim.Type=="Edit User" && claim.Value=="true") ||
+                            context.User.IsInRole("PowerUser")
+                        ));
+                                
+                options.AddPolicy("DeleteUserPolicy",
+                        policy => policy.RequireClaim("Delete User", "true"));
+
+                options.AddPolicy("CreateAdmEntityPolicy",
+                        policy => policy.RequireClaim("Create AdmEntity", "true"));
+                options.AddPolicy("ModifyAdmEntityPolicy",
+                        policy => policy.RequireClaim("Modify AdmEntity", "true"));
+                options.AddPolicy("DeleteAdmEntityPolicy",
+                        policy => policy.RequireClaim("Delete AdmEntity", "true"));
+                options.AddPolicy("ViewAdmEntityPolicy",
+                        policy => policy.RequireClaim("View AdmEntity", "true"));
+
+                options.AddPolicy("CreateBusEntityPolicy",
+                        policy => policy.RequireClaim("Create BusEntity", "true"));
+                options.AddPolicy("ModifyBusEntityPolicy",
+                        policy => policy.RequireClaim("Modify BusEntity", "true"));
+                options.AddPolicy("DeleteBusEntityPolicy",
+                        policy => policy.RequireClaim("Delete BusEntity", "true"));
+                options.AddPolicy("ViewBusEntityPolicy",
+                        policy => policy.RequireClaim("View BusEntity", "true"));
+
             });
             services.AddHttpContextAccessor();
 

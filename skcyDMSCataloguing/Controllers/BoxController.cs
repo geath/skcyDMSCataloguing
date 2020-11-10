@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ using skcyDMSCataloguing.ViewModels;
 
 namespace skcyDMSCataloguing.Controllers
 {
+    [Authorize]
     public class BoxController : Controller
     {
         private readonly IBaseAsyncRepo<Box> baseAsyncBoxRepo;
@@ -36,6 +38,7 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: BookController
+        [Authorize(Policy ="ViewBusEntityPolicy")]
         public async Task<ActionResult> Index(int? id, int? folderid)
         {
             var viewmodel = new BoxFolderDocIndexData();
@@ -70,6 +73,7 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: BookController/Create
+        [Authorize(Policy = "CreateBusEntityPolicy")]
         public async Task<ActionResult> Create()
         {
             Box box = new Box();
@@ -87,6 +91,7 @@ namespace skcyDMSCataloguing.Controllers
 
         // POST: BookController/Create
         [HttpPost]
+        [Authorize(Policy = "CreateBusEntityPolicy")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind("BoxDescription,DateBoxCreated,BoxCreatedBy,BoxCreatorID")] Box box)
         {
@@ -113,17 +118,17 @@ namespace skcyDMSCataloguing.Controllers
         }
 
 
-
-
         // GET: BookController/Details/5
+        [HttpGet]
+        [Authorize(Policy = "ViewBusEntityPolicy")]
         public ActionResult Details(int id)
         {
             return View();
         }
-      
-
 
         // GET: BookController/Edit/5
+        [HttpGet]
+        [Authorize(Policy = "ModifyBusEntityPolicy")]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -143,6 +148,7 @@ namespace skcyDMSCataloguing.Controllers
 
         // POST: BookController/Edit/5
         [HttpPost]
+        [Authorize(Policy = "ModifyBusEntityPolicy")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int id, [Bind("ID,BoxDescription,DateBoxCreated,BoxCreatedBy,BoxCreatorID")] Box box)
         {
@@ -167,6 +173,8 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: BookController/Delete/5
+        [HttpGet]
+        [Authorize(Policy = "DeleteBusEntityPolicy")]
         public async Task<ActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
@@ -193,6 +201,7 @@ namespace skcyDMSCataloguing.Controllers
 
         // POST: BookController/Delete/5
         [HttpPost]
+        [Authorize(Policy = "DeleteBusEntityPolicy")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id, Box box)
         {

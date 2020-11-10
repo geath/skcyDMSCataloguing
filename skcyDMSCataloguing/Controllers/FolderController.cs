@@ -16,6 +16,7 @@ using skcyDMSCataloguing.ViewModels;
 
 namespace skcyDMSCataloguing.Controllers
 {
+    [Authorize]
     public class FolderController : Controller
     {
         private readonly IBaseAsyncRepo<Folder> baseAsyncFolderRepo;
@@ -37,6 +38,8 @@ namespace skcyDMSCataloguing.Controllers
 
 
         // GET: FolderController
+        [HttpGet]
+        [Authorize(Policy = "ViewBusEntityPolicy")]
         public async Task<IActionResult> Index()
         {
             var query = await baseAsyncFolderRepo.GetAllAsync(includeproperty: source=>source
@@ -49,10 +52,12 @@ namespace skcyDMSCataloguing.Controllers
                                     );
 
             return View(query);
-        }      
+        }
 
-            // GET: FolderController/Details/5
-            public async Task<IActionResult> Details(int? id)
+        // GET: FolderController/Details/5
+        [HttpGet]
+        [Authorize(Policy = "ViewBusEntityPolicy")]
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null) { return NotFound(); }
 
@@ -65,8 +70,9 @@ namespace skcyDMSCataloguing.Controllers
             return View(folder.FirstOrDefault());
         }
 
-
-       [HttpGet]
+      
+        [HttpGet]
+        [Authorize(Policy = "ModifyBusEntityPolicy")]
         public async Task<IActionResult> GetRelatedCif(int boxid,string accountno, string custidn)
         {
             int a = boxid;    
@@ -115,7 +121,9 @@ namespace skcyDMSCataloguing.Controllers
 
       
             // GET: FolderController/Create
-            public async Task<IActionResult> Create(int? boxid ,string CIFNo)
+        [HttpGet]
+        [Authorize(Policy = "CreateBusEntityPolicy")]
+        public async Task<IActionResult> Create(int? boxid ,string CIFNo)
         {
             ViewData["BoxID"] = boxid;
             TempData["BoxID"]= boxid;
@@ -168,6 +176,7 @@ namespace skcyDMSCataloguing.Controllers
 
         // POST: FolderController/Create
         [HttpPost]
+        [Authorize(Policy = "CreateBusEntityPolicy")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("FolderName,FolderDescription,BoxID,CustDataCIFNo")] Folder folder) 
         {
@@ -190,6 +199,8 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: FolderController/Edit/5
+       [HttpGet]
+       [Authorize(Policy = "ModifyBusEntityPolicy")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id==null) { return NotFound(); }
@@ -203,6 +214,7 @@ namespace skcyDMSCataloguing.Controllers
 
         // POST: FolderController/Edit/5
         [HttpPost]
+        [Authorize(Policy = "ModifyBusEntityPolicy")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,FolderName,BoxID,CustDataCIFNo")] Folder folder)
         {
@@ -227,6 +239,8 @@ namespace skcyDMSCataloguing.Controllers
         }
 
         // GET: FolderController/Delete/5
+        [HttpGet]
+        [Authorize(Policy = "DeleteBusEntityPolicy")]
         public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null) { return NotFound(); }
@@ -247,6 +261,7 @@ namespace skcyDMSCataloguing.Controllers
 
         // POST: FolderController/Delete/5
         [HttpPost]
+        [Authorize(Policy = "DeleteBusEntityPolicy")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id, Folder folder)
         {
