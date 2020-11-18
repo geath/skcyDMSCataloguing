@@ -101,7 +101,7 @@ namespace skcyDMSCataloguing.Controllers
 
             if (String.IsNullOrEmpty(accountno) &&  !String.IsNullOrEmpty(custidn))
             {
-                var allcifs = await baseAsyncCustDataRepo.GetAllAsync(filter: cd => cd.CustomerIDN == custidn);                              
+                var allcifs = await baseAsyncCustDataRepo.GetAllAsync(filter: cd => cd.CustomerIDN.Contains(custidn) || cd.CustomerName.Contains(custidn));                              
                 var viewModel = new List<AssignedAccountData>();
                 foreach (var cif in allcifs)
                 {
