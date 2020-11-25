@@ -32,7 +32,7 @@
                        placeholder="Creator Search">
             </div>
         </div>
-        
+
         <div class="form-row">
             <div class="input-group md-form form-sm form-1 pl-0 mx-3 my-3 ">
                 <div class="input-group-prepend">
@@ -104,6 +104,24 @@
         }
     </tbody>
 </table>
+
+
+@{
+    var prevDisabled = (Model.CurrentPage - 1) == 0 ? "disabled" : "";
+    var nextDisabled = (Model.CurrentPage + 1) > (Model.TotalPages) ? "disabled" : "";
+}
+
+<a class="btn btn-group-lg btn-outline-success @prevDisabled "
+   asp-action="Index"
+   asp-route-pageNumber="@(Model.CurrentPage-1)">
+    Previous 
+</a>
+<a class="btn btn-group-lg btn-outline-success @nextDisabled"
+   asp-action="Index"
+   asp-route-pageNumber="@(Model.CurrentPage+1)">
+    Next
+</a>
+<span>Page @Model.CurrentPage of  @Model.TotalPages </span>
 
 @if (Model.Folders != null || Model.CustDatas != null)
 {

@@ -19,10 +19,11 @@ namespace skcyDMSCataloguing.Services
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 
             this.AddRange(items);
-        }
+        }        
 
         public bool HasPreviousPage
         {
+
             get
             {
                 return (PageIndex > 1);

@@ -48,8 +48,10 @@ namespace skcyDMSCataloguing.Controllers
         //[AllowAnonymous]
         // [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors,WebAppViewers")]
         public async Task<ActionResult> Index(int? id, int? folderid, string searchBox, string searchCreator, string sortOrder,
-                                                DateTime? searchDateFrom, DateTime? searchDateTo)
+                                                DateTime? searchDateFrom, DateTime? searchDateTo, int? pageNumber)
         {
+
+
             var viewmodel = new BoxFolderDocIndexData();
      
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -71,6 +73,8 @@ namespace skcyDMSCataloguing.Controllers
                                            .ThenInclude(ct => ct.CustData)
                                             .ThenInclude(hl => hl.PrjVelocities2)
                                             );
+
+
             #region SearchFunctionality
             if (    (searchDateFrom == null && searchDateTo == null) &&
                     ( 
@@ -183,6 +187,7 @@ namespace skcyDMSCataloguing.Controllers
 
             #endregion
 
+
             #region SortFunctionality
             if (!String.IsNullOrEmpty(sortOrder)) 
             {                               
@@ -282,6 +287,7 @@ namespace skcyDMSCataloguing.Controllers
             }
             #endregion
 
+
             if (id != null) {
                 ViewData["BoxID"] = id.Value;
                 viewmodel.Folders = viewmodel.Boxes
@@ -293,6 +299,29 @@ namespace skcyDMSCataloguing.Controllers
                 ViewData["FolderID"] = folderid.Value;
 
             }
+
+            #region PaginationFunctionality             
+
+            viewmodel.CountedBoxes = viewmodel.Boxes.Count();
+            viewmodel.CurrentPage = pageNumber ?? 1;
+            viewmodel.PageSize = 5;
+            viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
+            //var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+           var soula = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
+                                         .Include(bc => bc.BoxCreator)
+                                         .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjHelixes1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities2)                   
+                                            
+                                            );
+            viewmodel.Boxes = soula.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
+            #endregion
 
             return View(viewmodel);
         }
