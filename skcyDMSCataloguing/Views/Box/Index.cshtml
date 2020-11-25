@@ -7,14 +7,75 @@
 <h1>Index of Boxes</h1>
 
 <p>
-    <a asp-action="Create">Create New Box</a>
+    <a asp-action="Create">Create New Box</a> || <a asp-action="Index">Back to Full List</a>
 </p>
+
+<div class="container-fluid ">
+    <form class="form-inline" asp-action="Index" method="get">
+        <div class="form-row">
+            <div class="input-group md-form form-sm form-1 pl-0 mx-3 my-3 ">
+                <div class="input-group-prepend">
+                    <button type="submit" class="input-group-text purple lighten-3" style="width:inherit">
+                        <i class="fas fa-search text-white" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <input class="form-control my-0 py-1" type="text" id="BoxSearch" name="searchBox" value="@ViewData["CurrentFilter"]"
+                       placeholder="Box Search">
+            </div>
+            <div class="input-group md-form form-sm form-1 pl-0 mx-3 my-3 ">
+                <div class="input-group-prepend">
+                    <button type="submit" class="input-group-text purple lighten-3" style="width:inherit">
+                        <i class="fas fa-search text-white" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <input class="form-control my-0 py-1" type="text" id="CreatedBy" name="searchCreator" value="@ViewData["CurrentFilter"]"
+                       placeholder="Creator Search">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="input-group md-form form-sm form-1 pl-0 mx-3 my-3 ">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="DateFrom">From</span>
+                </div>
+                <div>
+                    <input class="form-control my-0 py-1" type="date" id="DateFrom" name="searchDateFrom" value="">
+                </div>
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="DateTo">To</span>
+                </div>
+                <div>
+                    <input class="form-control my-0 py-1" type="date" id="DateTo" name="searchDateTo" value="">
+                </div>
+                <div class="input-group-prepend">
+                    <button type="submit" class="input-group-text purple lighten-3" style="width:inherit">
+                        <i class="fas fa-search text-white" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<br />
+<br />
 <table class="table">
     <thead>
         <tr>
-            <th> BoxDescription </th>
-            <th> DateBoxCreated </th>
-            <th> BoxCreatedBy   </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">
+                    Box Description <i class="fas fa-sort"></i>
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">
+                    Date Box Created <i class="fas fa-sort"></i>
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["CreatorSortParm"]">
+                    Box Created By <i class="fas fa-sort"></i>
+                </a>
+            </th>
             @*<th> Box Creator Name </th>*@
             <th></th>
         </tr>
@@ -33,23 +94,23 @@
                     @Html.DisplayFor(modelItem => item.BoxCreatedBy)
                 </td>
                 @*<td>
-                    @Html.DisplayFor(modelItem => item.BoxCreator.CreatorName)
-                </td>*@
+                        @Html.DisplayFor(modelItem => item.BoxCreator.CreatorName)
+                    </td>*@
                 <td>
                     <a asp-action="Index" asp-route-id="@item.ID">Select</a> |
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |                    
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-@if (Model.Folders != null || Model.CustDatas !=null)
+@if (Model.Folders != null || Model.CustDatas != null)
 {
     <br />
     <br />
     <h3> Folders or DocumentBatches in the selected box : @ViewData["BoxID"]</h3>
-    <a asp-controller="Folder" asp-action="Create" asp-route-boxid=@ViewData["BoxID"] >Create New Folder or DocumentBatch</a>
+    <a asp-controller="Folder" asp-action="Create" asp-route-boxid=@ViewData["BoxID"]>Create New Folder or DocumentBatch</a>
     <br />
 
     <table class="table">
@@ -57,7 +118,7 @@
             <th>Barcode</th>
             <th>CIFNo</th>
             <th>CustomerName</th>
-             
+
             <th>IsHelix1</th>
             <th>IsVelocity1</th>
             <th>IsVelocity2</th>
@@ -66,47 +127,47 @@
 
         @foreach (var fld in Model.Folders)
         {
-            
-    <tr>
-        <td>@fld.FolderName</td>
-        <td>@fld.CustDataCIFNo</td>
-        <td>@fld.CustData.CustomerName</td>
-         
-        <td>
-            @{ if (fld.CustData.PrjHelixes1 != null)
 
-                    foreach (var hlx in fld.CustData.PrjHelixes1)
-                    {
-                        @hlx.Helix1Pool
-                        <br />
-                    }
-            }
-        </td>
-        <td>
-            @{ if (fld.CustData.PrjVelocities1 != null)
+            <tr>
+                <td>@fld.FolderName</td>
+                <td>@fld.CustDataCIFNo</td>
+                <td>@fld.CustData.CustomerName</td>
 
-                    foreach (var vel1 in fld.CustData.PrjVelocities1)
-                    {
-                        @vel1.CustDataCIFNo.Any()
-                        <br />
-                    }
-            }
-        </td>
-        <td>
-            @{ if (fld.CustData.PrjVelocities2 != null)
+                <td>
+                    @{ if (fld.CustData.PrjHelixes1 != null)
 
-                    foreach (var vel2 in fld.CustData.PrjVelocities2)
-                    {
-                        @vel2.CustDataCIFNo.Any()
-                        <br />
+                            foreach (var hlx in fld.CustData.PrjHelixes1)
+                            {
+                                @hlx.Helix1Pool
+                                <br />
+                            }
                     }
-            }
-        </td>
-        <td>
-            <a asp-controller="Folder" asp-action="Edit" asp-route-id="@fld.ID">Edit Folder</a> |
-            <a asp-controller="Folder" asp-action="Delete" asp-route-ID="@fld.ID">Delete Folder</a>
-        </td>
-    </tr>
+                </td>
+                <td>
+                    @{ if (fld.CustData.PrjVelocities1 != null)
+
+                            foreach (var vel1 in fld.CustData.PrjVelocities1)
+                            {
+                                @vel1.CustDataCIFNo.Any()
+                                <br />
+                            }
+                    }
+                </td>
+                <td>
+                    @{ if (fld.CustData.PrjVelocities2 != null)
+
+                            foreach (var vel2 in fld.CustData.PrjVelocities2)
+                            {
+                                @vel2.CustDataCIFNo.Any()
+                                <br />
+                            }
+                    }
+                </td>
+                <td>
+                    <a asp-controller="Folder" asp-action="Edit" asp-route-id="@fld.ID">Edit Folder</a> |
+                    <a asp-controller="Folder" asp-action="Delete" asp-route-ID="@fld.ID">Delete Folder</a>
+                </td>
+            </tr>
         }
     </table>
 }
@@ -114,5 +175,30 @@
 
 
 
+@*<button type="submit">
+        <span class="glyphicon glyphicon-edit"></span>
+    </button>*@
 
-           
+
+@*<div class="form-actions no-color col-lg">
+        <div>
+            <div class="col-form-label">
+                <label class="control-label" for="DateFrom">From</label>
+            </div>
+            <div>
+                <input class="form-control" type="date" id="DateFrom" name="DateFrom" value="">
+            </div>
+        </div>
+        <div>
+            <div class="col-form-label">
+                <label class="control-label" for="DateTo">To</label>
+            </div>
+            <div>
+                <input class="form-control" type="date" id="DateTo" name="DateTo" value="">
+            </div>
+        </div>
+    </div>
+    <div class="form-actions no-color col-lg">
+        <input type="text" id="CreatedBy" name="SearchString" value="@ViewData["CurrentFilter"]"
+               placeholder="Creator" />
+    </div>*@

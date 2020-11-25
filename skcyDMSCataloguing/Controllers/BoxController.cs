@@ -47,9 +47,17 @@ namespace skcyDMSCataloguing.Controllers
         // GET: BookController
         //[AllowAnonymous]
         // [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors,WebAppViewers")]
-        public async Task<ActionResult> Index(int? id, int? folderid)
+        public async Task<ActionResult> Index(int? id, int? folderid, string searchBox, string searchCreator, string sortOrder,
+                                                DateTime? searchDateFrom, DateTime? searchDateTo)
         {
             var viewmodel = new BoxFolderDocIndexData();
+     
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewData["CreatorSortParm"] = sortOrder == "Creator" ? "creator_desc" : "Creator";
+
+            ViewData["BoxFilter"] = searchBox;
+            ViewData["CreatorFilter"] = searchCreator;
 
             viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
                                          .Include(bc => bc.BoxCreator)
@@ -63,9 +71,218 @@ namespace skcyDMSCataloguing.Controllers
                                            .ThenInclude(ct => ct.CustData)
                                             .ThenInclude(hl => hl.PrjVelocities2)
                                             );
+            #region SearchFunctionality
+            if (    (searchDateFrom == null && searchDateTo == null) &&
+                    ( 
+                        (!String.IsNullOrEmpty(searchBox) && String.IsNullOrEmpty(searchCreator)) ||
+                        (String.IsNullOrEmpty(searchBox) && !String.IsNullOrEmpty(searchCreator))
+                    )
+                )
+            {
+                viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(filter:b => b.BoxDescription.Contains(searchBox) ||
+                                                                                 b.BoxCreator.CreatorName.Contains(searchCreator), 
+                                                                     includeproperty: source => source                                         
+                                         .Include(bc => bc.BoxCreator)
+                                         .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjHelixes1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities2)
+                                            );                
+                return View(viewmodel);
+            }
+
+            if (
+                    (searchDateFrom == null && searchDateTo == null) &&
+                    (
+                        !String.IsNullOrEmpty(searchBox) && !String.IsNullOrEmpty(searchCreator))
+                    )
+            {
+                viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(filter: b => b.BoxDescription.Contains(searchBox) &&
+                                                                                  b.BoxCreator.CreatorName.Contains(searchCreator),
+                                                                     includeproperty: source => source
+                                         .Include(bc => bc.BoxCreator)
+                                         .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjHelixes1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities2)
+                                            );
+                return View(viewmodel);
+            }
+
+            if ( !String.IsNullOrEmpty(searchCreator) &&
+                (searchDateFrom!=null && searchDateTo==null) ||
+                (searchDateFrom == null && searchDateTo != null)
+                ) 
+            {
+                viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(filter: b => b.DateBoxCreated.Date == searchDateFrom && b.BoxCreator.CreatorName==searchCreator,
+                                                                     includeproperty: source => source
+                                         .Include(bc => bc.BoxCreator)
+                                         .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjHelixes1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities2)
+                                            );
+                return View(viewmodel);
+            }
+
+            if (    String.IsNullOrEmpty(searchCreator) && 
+                   (searchDateFrom != null && searchDateTo == null)           
+               )
+            {
+                viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(filter: b => b.DateBoxCreated.Date == searchDateFrom ,
+                                                                     includeproperty: source => source
+                                         .Include(bc => bc.BoxCreator)
+                                         .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjHelixes1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities2)
+                                            );
+                return View(viewmodel);
+            }
+            if (
+                 !String.IsNullOrEmpty(searchCreator) &&
+                 (searchDateFrom != null && searchDateTo!=null)
+               )
+            {
+                viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(filter: b => (b.DateBoxCreated >=searchDateFrom && b.DateBoxCreated<= searchDateTo)
+                                                                                    && b.BoxCreator.CreatorName == searchCreator,
+                                                                     includeproperty: source => source
+                                         .Include(bc => bc.BoxCreator)
+                                         .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjHelixes1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities2)
+                                            );
+                return View(viewmodel);
+            }
+
+            #endregion
+
+            #region SortFunctionality
+            if (!String.IsNullOrEmpty(sortOrder)) 
+            {                               
+                switch (sortOrder)
+                {
+                    case "name_desc":
+                        viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
+                                           .OrderByDescending(b => b.BoxDescription)
+                                           .Include(bc => bc.BoxCreator)
+                                           .Include(fl => fl.Folders)
+                                             .ThenInclude(ct => ct.CustData)
+                                              .ThenInclude(hl => hl.PrjHelixes1)
+                                              .Include(fl => fl.Folders)
+                                             .ThenInclude(ct => ct.CustData)
+                                              .ThenInclude(hl => hl.PrjVelocities1)
+                                              .Include(fl => fl.Folders)
+                                             .ThenInclude(ct => ct.CustData)
+                                              .ThenInclude(hl => hl.PrjVelocities2)
+                                              );
+                        break;
+                    case "Date":
+                        viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
+                                                .OrderBy(b => b.DateBoxCreated)
+                                                .Include(bc => bc.BoxCreator)
+                                                .Include(fl => fl.Folders)
+                                                  .ThenInclude(ct => ct.CustData)
+                                                   .ThenInclude(hl => hl.PrjHelixes1)
+                                                   .Include(fl => fl.Folders)
+                                                  .ThenInclude(ct => ct.CustData)
+                                                   .ThenInclude(hl => hl.PrjVelocities1)
+                                                   .Include(fl => fl.Folders)
+                                                  .ThenInclude(ct => ct.CustData)
+                                                   .ThenInclude(hl => hl.PrjVelocities2)
+                                                   );
+                        break;
+                    case "date_desc":
+                        viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
+                                                .OrderByDescending(b => b.DateBoxCreated)
+                                                .Include(bc => bc.BoxCreator)
+                                                .Include(fl => fl.Folders)
+                                                  .ThenInclude(ct => ct.CustData)
+                                                   .ThenInclude(hl => hl.PrjHelixes1)
+                                                   .Include(fl => fl.Folders)
+                                                  .ThenInclude(ct => ct.CustData)
+                                                   .ThenInclude(hl => hl.PrjVelocities1)
+                                                   .Include(fl => fl.Folders)
+                                                  .ThenInclude(ct => ct.CustData)
+                                                   .ThenInclude(hl => hl.PrjVelocities2)
+                                                   );
+                        break;
+                    case "Creator":
+                        viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
+                                               .OrderBy(b => b.BoxCreator)
+                                               .Include(bc => bc.BoxCreator)
+                                               .Include(fl => fl.Folders)
+                                                 .ThenInclude(ct => ct.CustData)
+                                                  .ThenInclude(hl => hl.PrjHelixes1)
+                                                  .Include(fl => fl.Folders)
+                                                 .ThenInclude(ct => ct.CustData)
+                                                  .ThenInclude(hl => hl.PrjVelocities1)
+                                                  .Include(fl => fl.Folders)
+                                                 .ThenInclude(ct => ct.CustData)
+                                                  .ThenInclude(hl => hl.PrjVelocities2)
+                                                  );
+                        break;
+                    case "creator_desc":
+                        viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
+                                           .OrderByDescending(b => b.BoxCreator)
+                                           .Include(bc => bc.BoxCreator)
+                                           .Include(fl => fl.Folders)
+                                             .ThenInclude(ct => ct.CustData)
+                                              .ThenInclude(hl => hl.PrjHelixes1)
+                                              .Include(fl => fl.Folders)
+                                             .ThenInclude(ct => ct.CustData)
+                                              .ThenInclude(hl => hl.PrjVelocities1)
+                                              .Include(fl => fl.Folders)
+                                             .ThenInclude(ct => ct.CustData)
+                                              .ThenInclude(hl => hl.PrjVelocities2)
+                                              );
+                        break;
+                    default:
+                        viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
+                                         .Include(bc => bc.BoxCreator)
+                                         .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjHelixes1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities1)
+                                            .Include(fl => fl.Folders)
+                                           .ThenInclude(ct => ct.CustData)
+                                            .ThenInclude(hl => hl.PrjVelocities2)
+                                            );
+                        break;
+                }
+                return View(viewmodel);
+            }
+            #endregion
+
             if (id != null) {
-
-
                 ViewData["BoxID"] = id.Value;
                 viewmodel.Folders = viewmodel.Boxes
                                     .Where(b => b.ID == id)
@@ -79,6 +296,9 @@ namespace skcyDMSCataloguing.Controllers
 
             return View(viewmodel);
         }
+
+
+
 
 
 
