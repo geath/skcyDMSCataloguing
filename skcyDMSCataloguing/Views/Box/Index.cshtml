@@ -117,9 +117,8 @@
    asp-route-searchBox="@ViewData["searchBox"]"
    asp-route-searchCreator="@ViewData["searchCreator"]"
    asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
-   asp-route-searchDateTo="@ViewData["searchDateTo"]"
-   >
-    Previous 
+   asp-route-searchDateTo="@ViewData["searchDateTo"]">
+    Previous
 </a>
 <a class="btn btn-group-lg btn-outline-success @nextDisabled"
    asp-action="Index"
@@ -127,8 +126,7 @@
    asp-route-searchBox="@ViewData["searchBox"]"
    asp-route-searchCreator="@ViewData["searchCreator"]"
    asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
-   asp-route-searchDateTo="@ViewData["searchDateTo"]"
-   >
+   asp-route-searchDateTo="@ViewData["searchDateTo"]">
     Next
 </a>
 <span>Page @Model.CurrentPage of  @Model.TotalPages </span>
@@ -139,8 +137,8 @@
     <br />
     <h3> Folders or DocumentBatches in the selected box : @ViewData["BoxDescription"]</h3>
     <a asp-controller="Folder" asp-action="Create" asp-route-boxid=@ViewData["BoxID"]>Create New Folder or DocumentBatch</a>
-    <br /> 
-    
+    <br />
+
     <table class="table">
         <tr>
             <th>Barcode</th>
