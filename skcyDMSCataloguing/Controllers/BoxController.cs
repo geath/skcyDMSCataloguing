@@ -59,15 +59,19 @@ namespace skcyDMSCataloguing.Controllers
                                               int? pageNumber)
         {
             
-            #region Method declarations and shared parameters
+            #region Shared Parameters 
             var viewmodel = new BoxFolderDocIndexData();
 
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
             ViewData["CreatorSortParm"] = sortOrder == "Creator" ? "creator_desc" : "Creator";
+      
+            ViewData["searchBox"] = searchBox??"";
+            ViewData["searchCreator"] = searchCreator??"";
+            ViewData["searchDateFrom"] = (searchDateFrom ==null) ?"" : searchDateFrom.Value.ToString("yyyy-MM-dd");
+            ViewData["searchDateTo"] =  (searchDateTo==null) ? "" : searchDateTo.Value.ToString("yyyy-MM-dd");
 
-            ViewData["BoxFilter"] = searchBox;
-            ViewData["CreatorFilter"] = searchCreator;            
+            ViewData["BoxID"] = (id==null)?0:id.Value;            
 
             var model = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
                                          .Include(bc => bc.BoxCreator)
@@ -81,6 +85,9 @@ namespace skcyDMSCataloguing.Controllers
                                            .ThenInclude(ct => ct.CustData)
                                             .ThenInclude(hl => hl.PrjVelocities2)                                            
                                             );
+            
+            
+            
             viewmodel.PageSize = 5;
             #endregion
 
@@ -95,8 +102,6 @@ namespace skcyDMSCataloguing.Controllers
                 )
             {
                 var pvm = model;
-                ViewData["searchBox"] = searchBox ?? "";
-                ViewData["searchCreator"] = searchCreator ?? "";
 
                 if (String.IsNullOrEmpty(searchCreator)) {
                      pvm = model.Where(b => b.BoxDescription.Contains(searchBox));               
@@ -109,11 +114,24 @@ namespace skcyDMSCataloguing.Controllers
                 viewmodel.Boxes = pvm;
                 viewmodel.CountedBoxes = viewmodel.Boxes.Count();
                 viewmodel.CurrentPage = pageNumber ?? 1;
-                //pagesize
                 viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
 
                 viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
-                               
+
+                if (id != null)
+                {
+                    ViewData["BoxDescription"] = model.Where(b => b.ID == id)
+                                    .Select(d => d.BoxDescription).FirstOrDefault().ToString();
+
+                    var alt = pvm.Where(b => b.ID == id).Single().Folders;
+                    if (alt.Any())
+                    {
+                        viewmodel.Folders = pvm
+                                     .Where(b => b.ID == id)
+                                     .Single().Folders;
+                    }
+                }
+
                 return View(viewmodel);
             }
             #endregion
@@ -126,17 +144,28 @@ namespace skcyDMSCataloguing.Controllers
                     )
             {
                 var pvm = model;
-                ViewData["searchBox"] = searchBox;
-                ViewData["searchCreator"] = searchCreator;
                 
                 pvm = model.Where(b => b.BoxDescription.Contains(searchBox) && b.BoxCreator.CreatorName.Contains(searchCreator));                
 
                 viewmodel.Boxes = pvm;
                 viewmodel.CountedBoxes = viewmodel.Boxes.Count();
                 viewmodel.CurrentPage = pageNumber ?? 1;
-                //pagesize
                 viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
                 viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
+
+                if (id != null)
+                {
+                    ViewData["BoxDescription"] = model.Where(b => b.ID == id)
+                                    .Select(d => d.BoxDescription).FirstOrDefault().ToString();
+
+                    var alt = pvm.Where(b => b.ID == id).Single().Folders;
+                    if (alt.Any())
+                    {
+                        viewmodel.Folders = pvm
+                                     .Where(b => b.ID == id)
+                                     .Single().Folders;
+                    }
+                }
 
                 return View(viewmodel);
             }
@@ -149,18 +178,30 @@ namespace skcyDMSCataloguing.Controllers
                 ) 
             {
                 var pvm = model;
-                ViewData["searchCreator"] = searchCreator;
-                ViewData["searchDateFrom"] = searchDateFrom.Value.ToString("yyyy-MM-dd");
-
-
-                pvm = model.Where(b => b.DateBoxCreated.Date.Equals(searchDateFrom) && b.BoxCreator.CreatorName.Contains(searchCreator));
+         
+                pvm = model.Where(b => b.DateBoxCreated.Date.Equals(searchDateFrom) 
+                                    && b.BoxCreator.CreatorName.Contains(searchCreator));
               
                 viewmodel.Boxes = pvm;
                 viewmodel.CountedBoxes = viewmodel.Boxes.Count();
                 viewmodel.CurrentPage = pageNumber ?? 1;
-                //pagesize
+          
                 viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
                 viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
+
+                if (id != null)
+                {
+                    ViewData["BoxDescription"] = model.Where(b => b.ID == id)
+                                    .Select(d => d.BoxDescription).FirstOrDefault().ToString();
+
+                    var alt = pvm.Where(b => b.ID == id).Single().Folders;
+                    if (alt.Any())
+                    {
+                        viewmodel.Folders = pvm
+                                     .Where(b => b.ID == id)
+                                     .Single().Folders;
+                    }
+                }
 
                 return View(viewmodel);
             }
@@ -172,21 +213,32 @@ namespace skcyDMSCataloguing.Controllers
                )
             {
                 var pvm = model;
-                
-                ViewData["searchDateFrom"] = searchDateFrom.Value.ToString("yyyy-MM-dd") ;                
-
+                            
                 pvm = model.Where(b => b.DateBoxCreated.Date.Equals(searchDateFrom))
                                     .OrderBy(b=>b.DateBoxCreated);                
 
                 viewmodel.Boxes = pvm;
                 viewmodel.CountedBoxes = viewmodel.Boxes.Count();
                 viewmodel.CurrentPage = pageNumber ?? 1;
-                //pagesize
+                
                 viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
                 viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
 
-                return View(viewmodel);
-              
+                if (id != null)
+                {
+                    ViewData["BoxDescription"] = model.Where(b => b.ID == id)
+                                    .Select(d => d.BoxDescription).FirstOrDefault().ToString();
+
+                    var alt= pvm.Where(b => b.ID == id).Single().Folders;
+                    if (alt.Any())
+                    {
+                        viewmodel.Folders = pvm
+                                     .Where(b => b.ID == id)
+                                     .Single().Folders;
+                    }                 
+                }
+
+                return View(viewmodel);              
             }
             #endregion
 
@@ -197,10 +249,6 @@ namespace skcyDMSCataloguing.Controllers
                )
             {
                 var pvm = model;
-
-                ViewData["searchCreator"] = searchCreator;
-                ViewData["searchDateFrom"] = searchDateFrom.Value.ToString("yyyy-MM-dd");
-                ViewData["searchDateTo"] = searchDateTo.Value.ToString("yyyy-MM-dd");
 
                 pvm = model.Where(b => (b.DateBoxCreated.Date >=searchDateFrom 
                                             && b.DateBoxCreated.Date <= searchDateTo)
@@ -214,6 +262,20 @@ namespace skcyDMSCataloguing.Controllers
                 viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
                 viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
 
+                if (id != null)
+                {
+                    ViewData["BoxDescription"] = model.Where(b => b.ID == id)
+                                    .Select(d => d.BoxDescription).FirstOrDefault().ToString();
+
+                    var alt = pvm.Where(b => b.ID == id).Single().Folders;
+                    if (alt.Any())
+                    {
+                        viewmodel.Folders = pvm
+                                     .Where(b => b.ID == id)
+                                     .Single().Folders;
+                    }
+                }
+
                 return View(viewmodel);
             }
             #endregion
@@ -226,22 +288,27 @@ namespace skcyDMSCataloguing.Controllers
             {
                 var pvm = model;
 
-               
-                ViewData["searchDateFrom"] = searchDateFrom.Value.ToString("yyyy-MM-dd");
-                ViewData["searchDateTo"] = searchDateTo.Value.ToString("yyyy-MM-dd");
-
                 pvm = model.Where(b => (b.DateBoxCreated.Date >= searchDateFrom
                                             && b.DateBoxCreated.Date <= searchDateTo))
                                         .OrderBy(b => b.DateBoxCreated);
-
+ 
                 viewmodel.Boxes = pvm;
+
                 viewmodel.CountedBoxes = viewmodel.Boxes.Count();
                 viewmodel.CurrentPage = pageNumber ?? 1;
                 //pagesize
                 viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
                 viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
 
-                return View(viewmodel);
+                if (id != null)
+                {
+                    ViewData["BoxDescription"] = model.Where(b => b.ID == id).Select(d => d.BoxDescription).FirstOrDefault().ToString();
+                    viewmodel.Folders = pvm
+                                        .Where(b => b.ID == id)
+                                        .Single().Folders;
+                }
+
+                    return View(viewmodel);
             }
             #endregion
 
@@ -346,16 +413,22 @@ namespace skcyDMSCataloguing.Controllers
             }
             #endregion
 
-
-            if (id != null) {
-                viewmodel.Boxes = model;
+            if (id != null)
+            {
                 ViewData["BoxID"] = id.Value;
                 ViewData["BoxDescription"] = model.Where(b => b.ID == id).Select(d => d.BoxDescription).FirstOrDefault().ToString();
 
-                viewmodel.Folders = viewmodel.Boxes
+                viewmodel.Boxes = model;
+
+                var alt = model.Where(b => b.ID == id).Single().Folders;
+                if (alt.Any())
+                {
+                    viewmodel.Folders = model
                                     .Where(b => b.ID == id)
                                     .Single().Folders;
+                }
             }
+
             if (folderid !=null)
             {
                 ViewData["FolderID"] = folderid.Value;
@@ -363,7 +436,7 @@ namespace skcyDMSCataloguing.Controllers
             }
 
             var pvmo = model.OrderBy(d=>d.DateBoxCreated);
-            #region PaginationFunctionality                                           
+
             viewmodel.Boxes = pvmo;
             viewmodel.CountedBoxes = viewmodel.Boxes.Count();
             viewmodel.CurrentPage = pageNumber ?? 1;
@@ -371,7 +444,7 @@ namespace skcyDMSCataloguing.Controllers
             viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
 
             viewmodel.Boxes = pvmo.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
-            #endregion
+          
 
             return View(viewmodel);
         }
