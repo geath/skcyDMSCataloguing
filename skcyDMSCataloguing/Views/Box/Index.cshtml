@@ -113,12 +113,22 @@
 
 <a class="btn btn-group-lg btn-outline-success @prevDisabled "
    asp-action="Index"
-   asp-route-pageNumber="@(Model.CurrentPage-1)">
+   asp-route-pageNumber="@(Model.CurrentPage-1)"
+   asp-route-searchBox="@ViewData["searchBox"]"
+   asp-route-searchCreator="@ViewData["searchCreator"]"
+   asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
+   asp-route-searchDateTo="@ViewData["searchDateTo"]"
+   >
     Previous 
 </a>
 <a class="btn btn-group-lg btn-outline-success @nextDisabled"
    asp-action="Index"
-   asp-route-pageNumber="@(Model.CurrentPage+1)">
+   asp-route-pageNumber="@(Model.CurrentPage+1)"
+   asp-route-searchBox="@ViewData["searchBox"]"
+   asp-route-searchCreator="@ViewData["searchCreator"]"
+   asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
+   asp-route-searchDateTo="@ViewData["searchDateTo"]"
+   >
     Next
 </a>
 <span>Page @Model.CurrentPage of  @Model.TotalPages </span>
@@ -127,10 +137,10 @@
 {
     <br />
     <br />
-    <h3> Folders or DocumentBatches in the selected box : @ViewData["BoxID"]</h3>
+    <h3> Folders or DocumentBatches in the selected box : @ViewData["BoxDescription"]</h3>
     <a asp-controller="Folder" asp-action="Create" asp-route-boxid=@ViewData["BoxID"]>Create New Folder or DocumentBatch</a>
-    <br />
-
+    <br /> 
+    
     <table class="table">
         <tr>
             <th>Barcode</th>
@@ -193,30 +203,3 @@
 
 
 
-@*<button type="submit">
-        <span class="glyphicon glyphicon-edit"></span>
-    </button>*@
-
-
-@*<div class="form-actions no-color col-lg">
-        <div>
-            <div class="col-form-label">
-                <label class="control-label" for="DateFrom">From</label>
-            </div>
-            <div>
-                <input class="form-control" type="date" id="DateFrom" name="DateFrom" value="">
-            </div>
-        </div>
-        <div>
-            <div class="col-form-label">
-                <label class="control-label" for="DateTo">To</label>
-            </div>
-            <div>
-                <input class="form-control" type="date" id="DateTo" name="DateTo" value="">
-            </div>
-        </div>
-    </div>
-    <div class="form-actions no-color col-lg">
-        <input type="text" id="CreatedBy" name="SearchString" value="@ViewData["CurrentFilter"]"
-               placeholder="Creator" />
-    </div>*@

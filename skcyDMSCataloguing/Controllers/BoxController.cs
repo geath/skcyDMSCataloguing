@@ -24,12 +24,15 @@ namespace skcyDMSCataloguing.Controllers
 {
     public class BoxController : Controller
     {
+
+        #region Class Properties & Constructor 
         private readonly IBaseAsyncRepo<Box> baseAsyncBoxRepo;
         private readonly IBaseAsyncRepo<BoxCreator> baseAsyncBoxCreatorRepo;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<Box> logger;
         private readonly IGetObjectType getObjectType;
 
+        
         public BoxController(IBaseAsyncRepo<Box>  baseAsyncBoxRepo, 
                              IBaseAsyncRepo<BoxCreator> baseAsyncBoxCreatorRepo,
                              IHttpContextAccessor httpContextAccessor,
@@ -43,49 +46,30 @@ namespace skcyDMSCataloguing.Controllers
             this.getObjectType = getObjectType;
         }
 
+        #endregion
 
+
+        #region IndexMethod
         // GET: BookController
         //[AllowAnonymous]
         // [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors,WebAppViewers")]
-        public async Task<ActionResult> Index(int? id, int? folderid, string searchBox, string searchCreator, string sortOrder,
-                                                DateTime? searchDateFrom, DateTime? searchDateTo, int? pageNumber)
+        public async Task<ActionResult> Index(int? id, int? folderid,
+                                              string searchBox, string searchCreator, string sortOrder,
+                                              DateTime? searchDateFrom, DateTime? searchDateTo,
+                                              int? pageNumber)
         {
-
-
+            
+            #region Method declarations and shared parameters
             var viewmodel = new BoxFolderDocIndexData();
-     
+
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
             ViewData["CreatorSortParm"] = sortOrder == "Creator" ? "creator_desc" : "Creator";
 
             ViewData["BoxFilter"] = searchBox;
-            ViewData["CreatorFilter"] = searchCreator;
+            ViewData["CreatorFilter"] = searchCreator;            
 
-            viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
-                                         .Include(bc => bc.BoxCreator)
-                                         .Include(fl => fl.Folders)
-                                           .ThenInclude(ct=>ct.CustData)
-                                            .ThenInclude(hl=>hl.PrjHelixes1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities2)
-                                            );
-
-
-            #region SearchFunctionality
-            if (    (searchDateFrom == null && searchDateTo == null) &&
-                    ( 
-                        (!String.IsNullOrEmpty(searchBox) && String.IsNullOrEmpty(searchCreator)) ||
-                        (String.IsNullOrEmpty(searchBox) && !String.IsNullOrEmpty(searchCreator))
-                    )
-                )
-            {
-                viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(filter:b => b.BoxDescription.Contains(searchBox) ||
-                                                                                 b.BoxCreator.CreatorName.Contains(searchCreator), 
-                                                                     includeproperty: source => source                                         
+            var model = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
                                          .Include(bc => bc.BoxCreator)
                                          .Include(fl => fl.Folders)
                                            .ThenInclude(ct => ct.CustData)
@@ -95,98 +79,173 @@ namespace skcyDMSCataloguing.Controllers
                                             .ThenInclude(hl => hl.PrjVelocities1)
                                             .Include(fl => fl.Folders)
                                            .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities2)
-                                            );                
+                                            .ThenInclude(hl => hl.PrjVelocities2)                                            
+                                            );
+            viewmodel.PageSize = 5;
+            #endregion
+
+            #region SearchFunctionality
+
+            #region Search By Box OR Creator whithout Date restriction
+            if ((searchDateFrom == null && searchDateTo == null) && 
+                    (
+                        (!String.IsNullOrEmpty(searchBox) && String.IsNullOrEmpty(searchCreator)) ||
+                        (String.IsNullOrEmpty(searchBox) && !String.IsNullOrEmpty(searchCreator))
+                    )
+                )
+            {
+                var pvm = model;
+                ViewData["searchBox"] = searchBox ?? "";
+                ViewData["searchCreator"] = searchCreator ?? "";
+
+                if (String.IsNullOrEmpty(searchCreator)) {
+                     pvm = model.Where(b => b.BoxDescription.Contains(searchBox));               
+                }
+                if (String.IsNullOrEmpty(searchBox))
+                {
+                     pvm = model.Where(b => b.BoxCreator.CreatorName.Contains(searchCreator));
+                 }
+
+                viewmodel.Boxes = pvm;
+                viewmodel.CountedBoxes = viewmodel.Boxes.Count();
+                viewmodel.CurrentPage = pageNumber ?? 1;
+                //pagesize
+                viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
+
+                viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
+                               
                 return View(viewmodel);
             }
+            #endregion
 
+            #region Search By Box AND Creator whithout Date restriction
             if (
                     (searchDateFrom == null && searchDateTo == null) &&
                     (
                         !String.IsNullOrEmpty(searchBox) && !String.IsNullOrEmpty(searchCreator))
                     )
             {
-                viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(filter: b => b.BoxDescription.Contains(searchBox) &&
-                                                                                  b.BoxCreator.CreatorName.Contains(searchCreator),
-                                                                     includeproperty: source => source
-                                         .Include(bc => bc.BoxCreator)
-                                         .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjHelixes1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities2)
-                                            );
+                var pvm = model;
+                ViewData["searchBox"] = searchBox;
+                ViewData["searchCreator"] = searchCreator;
+                
+                pvm = model.Where(b => b.BoxDescription.Contains(searchBox) && b.BoxCreator.CreatorName.Contains(searchCreator));                
+
+                viewmodel.Boxes = pvm;
+                viewmodel.CountedBoxes = viewmodel.Boxes.Count();
+                viewmodel.CurrentPage = pageNumber ?? 1;
+                //pagesize
+                viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
+                viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
+
                 return View(viewmodel);
             }
+            #endregion
 
+            #region Search By Creator in specific Date
             if ( !String.IsNullOrEmpty(searchCreator) &&
                 (searchDateFrom!=null && searchDateTo==null) ||
-                (searchDateFrom == null && searchDateTo != null)
+                (searchDateFrom == null && searchDateTo != null) //maybe not needed
                 ) 
             {
-                viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(filter: b => b.DateBoxCreated.Date == searchDateFrom && b.BoxCreator.CreatorName==searchCreator,
-                                                                     includeproperty: source => source
-                                         .Include(bc => bc.BoxCreator)
-                                         .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjHelixes1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities2)
-                                            );
+                var pvm = model;
+                ViewData["searchCreator"] = searchCreator;
+                ViewData["searchDateFrom"] = searchDateFrom.Value.ToString("yyyy-MM-dd");
+
+
+                pvm = model.Where(b => b.DateBoxCreated.Date.Equals(searchDateFrom) && b.BoxCreator.CreatorName.Contains(searchCreator));
+              
+                viewmodel.Boxes = pvm;
+                viewmodel.CountedBoxes = viewmodel.Boxes.Count();
+                viewmodel.CurrentPage = pageNumber ?? 1;
+                //pagesize
+                viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
+                viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
+
                 return View(viewmodel);
             }
+            #endregion
 
+            #region Search in specific Date
             if (    String.IsNullOrEmpty(searchCreator) && 
                    (searchDateFrom != null && searchDateTo == null)           
                )
             {
-                viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(filter: b => b.DateBoxCreated.Date == searchDateFrom ,
-                                                                     includeproperty: source => source
-                                         .Include(bc => bc.BoxCreator)
-                                         .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjHelixes1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities2)
-                                            );
+                var pvm = model;
+                
+                ViewData["searchDateFrom"] = searchDateFrom.Value.ToString("yyyy-MM-dd") ;                
+
+                pvm = model.Where(b => b.DateBoxCreated.Date.Equals(searchDateFrom))
+                                    .OrderBy(b=>b.DateBoxCreated);                
+
+                viewmodel.Boxes = pvm;
+                viewmodel.CountedBoxes = viewmodel.Boxes.Count();
+                viewmodel.CurrentPage = pageNumber ?? 1;
+                //pagesize
+                viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
+                viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
+
                 return View(viewmodel);
+              
             }
+            #endregion
+
+            #region Search By Creator in a range of Dates
             if (
                  !String.IsNullOrEmpty(searchCreator) &&
                  (searchDateFrom != null && searchDateTo!=null)
                )
             {
-                viewmodel.Boxes = await baseAsyncBoxRepo.GetAllAsync(filter: b => (b.DateBoxCreated >=searchDateFrom && b.DateBoxCreated<= searchDateTo)
-                                                                                    && b.BoxCreator.CreatorName == searchCreator,
-                                                                     includeproperty: source => source
-                                         .Include(bc => bc.BoxCreator)
-                                         .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjHelixes1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities2)
-                                            );
+                var pvm = model;
+
+                ViewData["searchCreator"] = searchCreator;
+                ViewData["searchDateFrom"] = searchDateFrom.Value.ToString("yyyy-MM-dd");
+                ViewData["searchDateTo"] = searchDateTo.Value.ToString("yyyy-MM-dd");
+
+                pvm = model.Where(b => (b.DateBoxCreated.Date >=searchDateFrom 
+                                            && b.DateBoxCreated.Date <= searchDateTo)
+                                        && b.BoxCreator.CreatorName.Contains(searchCreator))
+                                        .OrderBy(b=>b.DateBoxCreated);
+
+                viewmodel.Boxes = pvm;
+                viewmodel.CountedBoxes = viewmodel.Boxes.Count();
+                viewmodel.CurrentPage = pageNumber ?? 1;
+                //pagesize
+                viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
+                viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
+
                 return View(viewmodel);
             }
-
             #endregion
 
+            #region Search By a range of Dates
+            if (
+                 String.IsNullOrEmpty(searchCreator) &&
+                 (searchDateFrom != null && searchDateTo != null)
+               )
+            {
+                var pvm = model;
+
+               
+                ViewData["searchDateFrom"] = searchDateFrom.Value.ToString("yyyy-MM-dd");
+                ViewData["searchDateTo"] = searchDateTo.Value.ToString("yyyy-MM-dd");
+
+                pvm = model.Where(b => (b.DateBoxCreated.Date >= searchDateFrom
+                                            && b.DateBoxCreated.Date <= searchDateTo))
+                                        .OrderBy(b => b.DateBoxCreated);
+
+                viewmodel.Boxes = pvm;
+                viewmodel.CountedBoxes = viewmodel.Boxes.Count();
+                viewmodel.CurrentPage = pageNumber ?? 1;
+                //pagesize
+                viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
+                viewmodel.Boxes = pvm.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
+
+                return View(viewmodel);
+            }
+            #endregion
+
+            #endregion
 
             #region SortFunctionality
             if (!String.IsNullOrEmpty(sortOrder)) 
@@ -289,7 +348,10 @@ namespace skcyDMSCataloguing.Controllers
 
 
             if (id != null) {
+                viewmodel.Boxes = model;
                 ViewData["BoxID"] = id.Value;
+                ViewData["BoxDescription"] = model.Where(b => b.ID == id).Select(d => d.BoxDescription).FirstOrDefault().ToString();
+
                 viewmodel.Folders = viewmodel.Boxes
                                     .Where(b => b.ID == id)
                                     .Single().Folders;
@@ -300,36 +362,22 @@ namespace skcyDMSCataloguing.Controllers
 
             }
 
-            #region PaginationFunctionality             
-
+            var pvmo = model.OrderBy(d=>d.DateBoxCreated);
+            #region PaginationFunctionality                                           
+            viewmodel.Boxes = pvmo;
             viewmodel.CountedBoxes = viewmodel.Boxes.Count();
             viewmodel.CurrentPage = pageNumber ?? 1;
             viewmodel.PageSize = 5;
             viewmodel.TotalPages = (int)Math.Ceiling(viewmodel.CountedBoxes / (double)viewmodel.PageSize);
-            //var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
-           var soula = await baseAsyncBoxRepo.GetAllAsync(includeproperty: source => source
-                                         .Include(bc => bc.BoxCreator)
-                                         .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjHelixes1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities1)
-                                            .Include(fl => fl.Folders)
-                                           .ThenInclude(ct => ct.CustData)
-                                            .ThenInclude(hl => hl.PrjVelocities2)                   
-                                            
-                                            );
-            viewmodel.Boxes = soula.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
+
+            viewmodel.Boxes = pvmo.Skip((viewmodel.CurrentPage - 1) * viewmodel.PageSize).Take(viewmodel.PageSize);
             #endregion
 
             return View(viewmodel);
         }
+        #endregion
 
-
-
-
-
+        #region DetailsMethod
 
         // GET: BookController/Details/5
         //[AllowAnonymous]
@@ -352,7 +400,9 @@ namespace skcyDMSCataloguing.Controllers
             }
             return View(query);
         }
+        #endregion
 
+        #region CreateMethod
         // GET: BookController/Create
         //[AllowAnonymous]
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
@@ -401,10 +451,10 @@ namespace skcyDMSCataloguing.Controllers
             return RedirectToAction("Index");
         }
 
+        #endregion
 
 
-
-
+        #region EditMethod
         // GET: BookController/Edit/5
         //[AllowAnonymous]
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
@@ -451,7 +501,9 @@ namespace skcyDMSCataloguing.Controllers
             PopulateBoxCreatorDropDownList(box.BoxCreatorID);
             return View(box);
         }
+        #endregion
 
+        #region DeleteMethod
         // GET: BookController/Delete/5
         //[AllowAnonymous]
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
@@ -478,6 +530,7 @@ namespace skcyDMSCataloguing.Controllers
 
             return View(boxToDelete);
         }
+       
 
         // POST: BookController/Delete/5
         [HttpPost]
@@ -505,6 +558,7 @@ namespace skcyDMSCataloguing.Controllers
             }
         }
 
+        #endregion
 
         private void  PopulateBoxCreatorDropDownList(object selectedBoxCreator = null)
         {
