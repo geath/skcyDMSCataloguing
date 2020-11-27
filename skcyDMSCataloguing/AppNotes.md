@@ -17,3 +17,11 @@ the logging providers by calling ```.ConfigureLogging``` extension method
 
 
 
+## Model Validation
+### Remote Validation
+- Create a method that encapsulates and performs the validation logic
+- Decorate the attribute with GET and POST Verbs. The GET is required because as the user 
+  enters the value, the client side script issues a GET request  to the server
+- return JSON true/false based on the evaluation of the validation's logic. (jquery validate method is fired
+  to perform the validation and for this method JSON result is expected )
+  

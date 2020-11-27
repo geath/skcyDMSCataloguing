@@ -18,7 +18,7 @@ namespace skcyDMSCataloguing.Models
         public Box Box { get; set; }
 
         [Required]
-        [Remote(action: "IsCIFNoUsed", controller: "Folder")]
+        [Remote("CIFHandledBy",controller:"Folder")]        
         public string CustDataCIFNo { get; set; }
         public CustData CustData { get; set; }
     }

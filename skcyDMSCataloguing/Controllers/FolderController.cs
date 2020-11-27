@@ -22,17 +22,26 @@ namespace skcyDMSCataloguing.Controllers
         private readonly IBaseAsyncRepo<CustData> baseAsyncCustDataRepo;
         private readonly IBaseAsyncRepo<CustAccData> baseAsyncCustAccRepo;
         private readonly IBaseAsyncRepo<CustRelData> baseAsyncCustRelRepo;
+        private readonly IBaseAsyncRepo<PrjHelix1> baseAsyncHelix1;
+        private readonly IBaseAsyncRepo<PrjVelocity1> baseAsyncVelocity1;
+        private readonly IBaseAsyncRepo<PrjVelocity2> baseAsyncVelocity2;
 
         public FolderController(IBaseAsyncRepo<Folder> baseAsyncFolderRepo,
                                 IBaseAsyncRepo<CustData> baseAsyncCustDataRepo,
                                 IBaseAsyncRepo<CustAccData> baseAsyncCustAccRepo,
-                                IBaseAsyncRepo<CustRelData> baseAsyncCustRelRepo
+                                IBaseAsyncRepo<CustRelData> baseAsyncCustRelRepo,
+                                IBaseAsyncRepo<PrjHelix1> baseAsyncHelix1,
+                                IBaseAsyncRepo<PrjVelocity1> baseAsyncVelocity1,
+                                IBaseAsyncRepo<PrjVelocity2> baseAsyncVelocity2
                                )
         {
             this.baseAsyncFolderRepo = baseAsyncFolderRepo;
             this.baseAsyncCustDataRepo = baseAsyncCustDataRepo;
             this.baseAsyncCustAccRepo = baseAsyncCustAccRepo;
             this.baseAsyncCustRelRepo = baseAsyncCustRelRepo;
+            this.baseAsyncHelix1 = baseAsyncHelix1;
+            this.baseAsyncVelocity1 = baseAsyncVelocity1;
+            this.baseAsyncVelocity2 = baseAsyncVelocity2;
         }
 
 
@@ -41,9 +50,9 @@ namespace skcyDMSCataloguing.Controllers
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> Index()
         {
-            var query = await baseAsyncFolderRepo.GetAllAsync(includeproperty: source=>source
-                                .Include(cd=>cd.CustData)
-                                    .ThenInclude(hl=>hl.PrjHelixes1)
+            var query = await baseAsyncFolderRepo.GetAllAsync(includeproperty: source => source
+                                .Include(cd => cd.CustData)
+                                    .ThenInclude(hl => hl.PrjHelixes1)
                                  .Include(cd => cd.CustData)
                                     .ThenInclude(hl => hl.PrjVelocities1)
                                   .Include(cd => cd.CustData)
@@ -60,27 +69,27 @@ namespace skcyDMSCataloguing.Controllers
         {
             if (id == null) { return NotFound(); }
 
-            var folder = await baseAsyncFolderRepo.GetAllAsync(fl=>fl.ID==id, includeproperty: source => source
-                                .Include(cd => cd.CustData)
+            var folder = await baseAsyncFolderRepo.GetAllAsync(fl => fl.ID == id, includeproperty: source => source
+                                    .Include(cd => cd.CustData)
                                     );
 
-            if (folder==null) { return NotFound(); }
+            if (folder == null) { return NotFound(); }
 
             return View(folder.FirstOrDefault());
         }
 
 
-       [HttpGet]
+        [HttpGet]
         //[AllowAnonymous]
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
-        public async Task<IActionResult> GetRelatedCif(int boxid,string accountno, string custidn)
+        public async Task<IActionResult> GetRelatedCif(int boxid, string accountno, string custidn)
         {
-            int a = boxid;    
+            int a = boxid;
 
             if (String.IsNullOrEmpty(accountno) && String.IsNullOrEmpty(custidn)) { return NotFound(); }
-            if (!String.IsNullOrEmpty(accountno) &&  String.IsNullOrEmpty(custidn))
+            if (!String.IsNullOrEmpty(accountno) && String.IsNullOrEmpty(custidn))
             {
-                var acc = await baseAsyncCustAccRepo.GetByConditionAsync(filter: ac => ac.CustAccountNo== accountno, includeProperties: "CustRelDataEntries");
+                var acc = await baseAsyncCustAccRepo.GetByConditionAsync(filter: ac => ac.CustAccountNo == accountno, includeProperties: "CustRelDataEntries");
                 var allcifs = await baseAsyncCustDataRepo.GetAllAsync();
                 var accountcifs = new HashSet<string>(acc.CustRelDataEntries.Select(cf => cf.CustCIFNo));
                 ViewData["AccountNo"] = acc.CustAccountNo;
@@ -99,16 +108,16 @@ namespace skcyDMSCataloguing.Controllers
                 return View("GetRelatedCif", model);
             }
 
-            if (String.IsNullOrEmpty(accountno) &&  !String.IsNullOrEmpty(custidn))
+            if (String.IsNullOrEmpty(accountno) && !String.IsNullOrEmpty(custidn))
             {
-                var allcifs = await baseAsyncCustDataRepo.GetAllAsync(filter: cd => cd.CustomerIDN.Contains(custidn) || cd.CustomerName.Contains(custidn));                              
+                var allcifs = await baseAsyncCustDataRepo.GetAllAsync(filter: cd => cd.CustomerIDN.Contains(custidn) || cd.CustomerName.Contains(custidn));
                 var viewModel = new List<AssignedAccountData>();
                 foreach (var cif in allcifs)
                 {
                     viewModel.Add(new AssignedAccountData
                     {
                         CIFNo = cif.CIFNo.Trim(),
-                        CIFCustomerName = cif.CustomerName ?? "",                       
+                        CIFCustomerName = cif.CustomerName ?? "",
                         BoxID = boxid
                     });
                 }
@@ -123,11 +132,11 @@ namespace skcyDMSCataloguing.Controllers
         // GET: FolderController/Create
         //[AllowAnonymous]
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
-        public async Task<IActionResult> Create(int? boxid ,string CIFNo)
+        public async Task<IActionResult> Create(int? boxid, string CIFNo)
         {
             ViewData["BoxID"] = boxid;
-            TempData["BoxID"]= boxid;
-            
+            TempData["BoxID"] = boxid;
+
 
             if (boxid != null && string.IsNullOrEmpty(CIFNo))
             {
@@ -139,18 +148,18 @@ namespace skcyDMSCataloguing.Controllers
                     {
                         BoxID = boxid ?? 0,
                         FolderName = "",      //Folder's Barcode
-                        FolderDescription ="",
-                        CustDataCIFNo= ""  //CIF Number
+                        FolderDescription = "",
+                        CustDataCIFNo = ""  //CIF Number
 
                     };
                     return View("CreateFromBox", foldertocreate);
                 }
-                return View("CreateFromBox", folderreltoboxid.FirstOrDefault());            
-            }    
-            
-            else 
-            {                  
-                if (boxid != null && (CIFNo!=null || CIFNo!=""))
+                return View("CreateFromBox", folderreltoboxid.FirstOrDefault());
+            }
+
+            else
+            {
+                if (boxid != null && (CIFNo != null || CIFNo != ""))
                 {
                     var folderreltoboxid = await baseAsyncFolderRepo.GetAllAsync(b => b.BoxID == boxid, orderBy: q => q.OrderByDescending(q => q.ID));
 
@@ -179,7 +188,7 @@ namespace skcyDMSCataloguing.Controllers
         [ValidateAntiForgeryToken]
         //[AllowAnonymous]
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
-        public async Task<IActionResult> Create([Bind("FolderName,FolderDescription,BoxID,CustDataCIFNo")] Folder folder) 
+        public async Task<IActionResult> Create([Bind("FolderName,FolderDescription,BoxID,CustDataCIFNo")] Folder folder)
         {
             var fex = await baseAsyncFolderRepo.GetAllAsync(m => m.BoxID == folder.BoxID);
             var awe = new HashSet<string>(fex.Select(c => c.CustDataCIFNo));
@@ -204,7 +213,7 @@ namespace skcyDMSCataloguing.Controllers
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id==null) { return NotFound(); }
+            if (id == null) { return NotFound(); }
 
             var folderToEdit = await baseAsyncFolderRepo.GetByConditionAsync(filter: i => i.ID == id);
 
@@ -236,7 +245,7 @@ namespace skcyDMSCataloguing.Controllers
                 ModelState.AddModelError(string.Empty, "Unable to save changes. Try again, and if the problem persists contact your system administrator.");
             }
 
-             
+
             return View(folder);
         }
 
@@ -247,10 +256,10 @@ namespace skcyDMSCataloguing.Controllers
         {
             if (id == null) { return NotFound(); }
 
-            var folderToDelete = await baseAsyncFolderRepo.GetByConditionAsync(fld => fld.ID == id, includeProperties:"Box,CustData");
-          
+            var folderToDelete = await baseAsyncFolderRepo.GetByConditionAsync(fld => fld.ID == id, includeProperties: "Box,CustData");
+
             if (folderToDelete == null) { return NotFound(); }
-            
+
             if (saveChangesError.GetValueOrDefault())
             {
                 ViewData["ErrorMessage"] =
@@ -278,11 +287,11 @@ namespace skcyDMSCataloguing.Controllers
             }
 
             try
-            {                 
+            {
 
                 baseAsyncFolderRepo.Delete(folder);
                 await baseAsyncFolderRepo.SaveAsync();
-                return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Box", action = "Index", id = ViewData["FolderBoxID"]??1 }));
+                return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Box", action = "Index", id = ViewData["FolderBoxID"] ?? 1 }));
             }
             catch (DbUpdateException /* dex */)
             {
@@ -291,14 +300,54 @@ namespace skcyDMSCataloguing.Controllers
             }
         }
 
-        [AcceptVerbs("GET","POST")]
-         public async Task<IActionResult> IsCIFNoUsed(string cifno) 
+        [AcceptVerbs("GET", "POST")]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        public async Task<IActionResult> IsCIFNoUsed(string custDataCIFNo)
         {
-            var cif = await baseAsyncFolderRepo.GetByConditionAsync(f => f.CustDataCIFNo == cifno);
-            
+            var cif = await baseAsyncFolderRepo.GetByConditionAsync(f => f.CustDataCIFNo == custDataCIFNo);
+
             if (cif == null) { return Json(true); }
-            else { return Json($"CIFNo {cifno} is already used in box {cif.BoxID}"); }
+            else { return Json($"CIFNo {custDataCIFNo} is already registered in box {cif.BoxID}"); }
+
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
+        public async Task<IActionResult> CIFHandledBy(string custDataCIFNo)
+        {
+            var hlx1 = await baseAsyncHelix1.GetByConditionAsync(h => h.CustDataCIFNo == custDataCIFNo);
+            var vel1 = await baseAsyncVelocity1.GetByConditionAsync(h => h.CustDataCIFNo == custDataCIFNo);
+            var vel2 = await baseAsyncVelocity2.GetByConditionAsync(h => h.CustDataCIFNo == custDataCIFNo);
+            var cif = await baseAsyncFolderRepo.GetByConditionAsync(f => f.CustDataCIFNo == custDataCIFNo);
+
+
+            if ((hlx1 == null && cif==null) && (vel1==null && vel2==null))
+            {
+                return Json(true);
+            }
             
+            else if (hlx1!=null) {
+                                    if (cif != null) { return Json($"CIFNo {custDataCIFNo} is Handled by: Helix and is already registered in box {cif.BoxID}"); }
+                                    return Json($" Handled by: Helix"); 
+                                 }
+
+            else if (vel1!=null) {
+                                    if (cif != null) { return Json($"CIFNo {custDataCIFNo} is Handled by: Velocity1 and is already registered in box {cif.BoxID}"); }
+                                    return Json($"Handled by: Velocity1");
+                                 }
+
+
+            else if (vel2!=null) {
+                                    if (cif != null) { return Json($"CIFNo {custDataCIFNo} is Handled by: Velocity1 and is already registered in box {cif.BoxID}"); }
+                                    return Json($"Handled by: Velocity2"); 
+                                 }
+
+            else if ((hlx1 == null && cif != null) && (vel1 == null && vel2 == null))  {
+                    
+                                    return Json($"CIFNo {custDataCIFNo} is already registered in box {cif.BoxID}");
+                                 }
+            
+            else { return Json($"Handled by: UnknownHandler"); }                                                  
         }
     }
 }

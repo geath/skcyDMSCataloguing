@@ -53,6 +53,9 @@ namespace skcyDMSCataloguing
             services.AddScoped<IBaseAsyncRepo<CustData>, BaseAsyncRepo<CustData>>();
             services.AddScoped<IBaseAsyncRepo<CustAccData>, BaseAsyncRepo<CustAccData>>();
             services.AddScoped<IBaseAsyncRepo<CustRelData>, BaseAsyncRepo<CustRelData>>();
+            services.AddScoped<IBaseAsyncRepo<PrjHelix1>, BaseAsyncRepo<PrjHelix1>>();
+            services.AddScoped<IBaseAsyncRepo<PrjVelocity1>, BaseAsyncRepo<PrjVelocity1>>();
+            services.AddScoped<IBaseAsyncRepo<PrjVelocity2>, BaseAsyncRepo<PrjVelocity2>>();
             services.AddScoped<IGetObjectType, GetObjectType>();
 
 
