@@ -311,43 +311,28 @@ namespace skcyDMSCataloguing.Controllers
 
         }
 
+
+
         [AcceptVerbs("GET", "POST")]
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
         public async Task<IActionResult> CIFHandledBy(string custDataCIFNo)
         {
-            var hlx1 = await baseAsyncHelix1.GetByConditionAsync(h => h.CustDataCIFNo == custDataCIFNo);
-            var vel1 = await baseAsyncVelocity1.GetByConditionAsync(h => h.CustDataCIFNo == custDataCIFNo);
-            var vel2 = await baseAsyncVelocity2.GetByConditionAsync(h => h.CustDataCIFNo == custDataCIFNo);
+     
             var cif = await baseAsyncFolderRepo.GetByConditionAsync(f => f.CustDataCIFNo == custDataCIFNo);
 
 
-            if ((hlx1 == null && cif==null) && (vel1==null && vel2==null))
+                if (cif!=null)
             {
                 return Json(true);
             }
-            
-            else if (hlx1!=null) {
-                                    if (cif != null) { return Json($"CIFNo {custDataCIFNo} is Handled by: Helix and is already registered in box {cif.BoxID}"); }
-                                    return Json($" Handled by: Helix"); 
-                                 }
-
-            else if (vel1!=null) {
-                                    if (cif != null) { return Json($"CIFNo {custDataCIFNo} is Handled by: Velocity1 and is already registered in box {cif.BoxID}"); }
-                                    return Json($"Handled by: Velocity1");
-                                 }
 
 
-            else if (vel2!=null) {
-                                    if (cif != null) { return Json($"CIFNo {custDataCIFNo} is Handled by: Velocity1 and is already registered in box {cif.BoxID}"); }
-                                    return Json($"Handled by: Velocity2"); 
-                                 }
-
-            else if ((hlx1 == null && cif != null) && (vel1 == null && vel2 == null))  {
-                    
-                                    return Json($"CIFNo {custDataCIFNo} is already registered in box {cif.BoxID}");
-                                 }
-            
-            else { return Json($"Handled by: UnknownHandler"); }                                                  
+            else 
+            {
+                 return Json($" CIF doesn't exist. Please check out the spelling and if the problem persists contact operations ");
+            }
+                                   
         }
+
     }
 }

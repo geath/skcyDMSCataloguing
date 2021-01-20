@@ -2,8 +2,11 @@
 
 @{
     ViewData["Title"] = "Register for Containers (Boxes) ";
-}
-
+    var prevDisabled = (Model.CurrentPage - 1) == 0 ? "disabled" : "";
+    var nextDisabled = (Model.CurrentPage + 1) > (Model.TotalPages) ? "disabled" : "";
+  }
+ 
+<p> @ViewData["sortOrder"].ToString() </p>
 <h1>Index of Boxes</h1>
 
 <p>
@@ -62,17 +65,35 @@
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">
-                    Box Description <i class="bi-sort-alpha-down"></i>
+                <a asp-action="Index"                   
+                   asp-route-sortOrder="@ViewData["BoxSortParm"]"
+                   asp-route-searchBox ="@ViewData["searchBox"]"
+                   asp-route-searchCreator="@ViewData["searchCreator"]"
+                   asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
+                   asp-route-searchDateTo="@ViewData["searchDateTo"]"
+                   >
+                    Box Description   <i class="bi-sort-down"></i>
                 </a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["DateSortParm"]"
+                   asp-route-searchBox ="@ViewData["searchBox"]"
+                   asp-route-searchCreator="@ViewData["searchCreator"]"
+                   asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
+                   asp-route-searchDateTo="@ViewData["searchDateTo"]"
+                   >
                     Date Box Created <i class="bi-sort-down"></i>
                 </a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["CreatorSortParm"]">
+                <a asp-action="Index" 
+                   asp-route-sortOrder="@ViewData["CreatorSortParm"]"
+                   asp-route-searchBox ="@ViewData["searchBox"]"
+                   asp-route-searchCreator="@ViewData["searchCreator"]"
+                   asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
+                   asp-route-searchDateTo="@ViewData["searchDateTo"]"
+                   >
                     Box Created By <i class="bi-sort-down"></i>
                 </a>
             </th>
@@ -94,7 +115,7 @@
                     @Html.DisplayFor(modelItem => item.BoxCreatedBy)
                 </td>
                 @*<td>
-                        @Html.DisplayFor(modelItem => item.BoxCreator.CreatorName)
+                        placeholder
                     </td>*@
                 <td>
                     <a asp-action="Index"
@@ -115,13 +136,13 @@
 
 
 @{
-    var prevDisabled = (Model.CurrentPage - 1) == 0 ? "disabled" : "";
-    var nextDisabled = (Model.CurrentPage + 1) > (Model.TotalPages) ? "disabled" : "";
+    //previous next variables
 }
 
 <a class="btn btn-group-lg btn-outline-success @prevDisabled "
    asp-action="Index"
    asp-route-pageNumber="@(Model.CurrentPage-1)"
+   asp-route-sortOrder="@ViewData["sortOrder"]"
    asp-route-searchBox="@ViewData["searchBox"]"
    asp-route-searchCreator="@ViewData["searchCreator"]"
    asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
@@ -131,6 +152,7 @@
 <a class="btn btn-group-lg btn-outline-success @nextDisabled"
    asp-action="Index"
    asp-route-pageNumber="@(Model.CurrentPage+1)"
+   asp-route-sortOrder="@ViewData["sortOrder"]"
    asp-route-searchBox="@ViewData["searchBox"]"
    asp-route-searchCreator="@ViewData["searchCreator"]"
    asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
