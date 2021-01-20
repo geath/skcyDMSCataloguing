@@ -294,7 +294,8 @@ namespace skcyDMSCataloguing.Controllers
             {
                 ViewData["BoxID"] = id.Value;
                 ViewData["BoxDescription"] = viewmodel.Boxes.Where(b => b.ID == id).Select(d => d.BoxDescription).FirstOrDefault().ToString();
-             
+
+                viewmodel.Boxes = viewmodel.Boxes.Where(b => b.ID == id);
                 var alt = viewmodel.Boxes.Where(b => b.ID == id).Single().Folders;
                 if (alt.Any())
                 {

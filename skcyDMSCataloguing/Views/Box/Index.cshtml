@@ -10,7 +10,7 @@
 <h1>Index of Boxes</h1>
 
 <p>
-    <a asp-action="Create">Create New Box</a> || <a asp-action="Index">Back to Full List</a>
+    <a asp-action="Create">Create New Box</a> || <a asp-action="Index" asp-route-id="null">Back to Full List</a>
 </p>
 
 <div class="container-fluid ">
@@ -120,11 +120,7 @@
                 <td>
                     <a asp-action="Index"
                        asp-route-id="@item.ID"
-                       asp-route-pageNumber="@(Model.CurrentPage)"
-                       asp-route-searchBox="@ViewData["searchBox"]"
-                       asp-route-searchCreator="@ViewData["searchCreator"]"
-                       asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
-                       asp-route-searchDateTo="@ViewData["searchDateTo"]">
+                       >
                         Select
                     </a> |
                     <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
