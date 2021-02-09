@@ -1,5 +1,10 @@
 ﻿@model BoxFolderDocIndexData
 
+
+<h3> Folders or DocumentBatches in the selected box : @TempData["BoxDescription"]</h3>
+<a asp-controller="Folder" asp-action="Create" asp-route-boxid=@TempData["BoxID"]>Create New Folder or DocumentBatch</a>
+<br />
+
 <table class="table">
     <tr>
         <th>Barcode</th>

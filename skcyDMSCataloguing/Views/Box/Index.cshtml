@@ -4,8 +4,8 @@
     ViewData["Title"] = "Register for Containers (Boxes) ";
     var prevDisabled = (Model.CurrentPage - 1) == 0 ? "disabled" : "";
     var nextDisabled = (Model.CurrentPage + 1) > (Model.TotalPages) ? "disabled" : "";
-  }
- 
+}
+
 <p> @ViewData["sortOrder"].ToString() </p>
 <h1>Index of Boxes</h1>
 
@@ -65,35 +65,32 @@
     <thead>
         <tr>
             <th>
-                <a asp-action="Index"                   
+                <a asp-action="Index"
                    asp-route-sortOrder="@ViewData["BoxSortParm"]"
-                   asp-route-searchBox ="@ViewData["searchBox"]"
+                   asp-route-searchBox="@ViewData["searchBox"]"
                    asp-route-searchCreator="@ViewData["searchCreator"]"
                    asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
-                   asp-route-searchDateTo="@ViewData["searchDateTo"]"
-                   >
+                   asp-route-searchDateTo="@ViewData["searchDateTo"]">
                     Box Description   <i class="bi-sort-down"></i>
                 </a>
             </th>
             <th>
                 <a asp-action="Index"
                    asp-route-sortOrder="@ViewData["DateSortParm"]"
-                   asp-route-searchBox ="@ViewData["searchBox"]"
+                   asp-route-searchBox="@ViewData["searchBox"]"
                    asp-route-searchCreator="@ViewData["searchCreator"]"
                    asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
-                   asp-route-searchDateTo="@ViewData["searchDateTo"]"
-                   >
+                   asp-route-searchDateTo="@ViewData["searchDateTo"]">
                     Date Box Created <i class="bi-sort-down"></i>
                 </a>
             </th>
             <th>
-                <a asp-action="Index" 
+                <a asp-action="Index"
                    asp-route-sortOrder="@ViewData["CreatorSortParm"]"
-                   asp-route-searchBox ="@ViewData["searchBox"]"
+                   asp-route-searchBox="@ViewData["searchBox"]"
                    asp-route-searchCreator="@ViewData["searchCreator"]"
                    asp-route-searchDateFrom="@ViewData["searchDateFrom"]"
-                   asp-route-searchDateTo="@ViewData["searchDateTo"]"
-                   >
+                   asp-route-searchDateTo="@ViewData["searchDateTo"]">
                     Box Created By <i class="bi-sort-down"></i>
                 </a>
             </th>
@@ -119,8 +116,7 @@
                     </td>*@
                 <td>
                     <a asp-action="Index"
-                       asp-route-id="@item.ID"
-                       >
+                       asp-route-id="@item.ID">
                         Select
                     </a> |
                     <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
@@ -160,14 +156,20 @@
 
 <br />
 <br />
-<h3> Folders or DocumentBatches in the selected box : @ViewData["BoxDescription"]</h3>
-<a asp-controller="Folder" asp-action="Create" asp-route-boxid=@ViewData["BoxID"]>Create New Folder or DocumentBatch</a>
-<br />
+
 
 
 @if (Model.Folders != null || Model.CustDatas != null)
-{    
-      <partial name="_FolderInBox" />    
+{
+    <partial name="_FolderInBox" />
+
+}
+
+else if(TempData["BoxID"]!=null)
+{
+    <h3> Folders or DocumentBatches in the selected box : @TempData["BoxDescription"]</h3>
+    <a asp-controller="Folder" asp-action="Create" asp-route-boxid=@TempData["BoxID"]>Create New Folder or DocumentBatch</a>
+    <br />
 }
 
 

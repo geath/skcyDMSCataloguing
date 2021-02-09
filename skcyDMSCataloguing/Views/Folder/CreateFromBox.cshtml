@@ -12,7 +12,6 @@
 
 <div class="row">
     <br />
-
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -44,31 +43,44 @@
 <br />
 <br />
 
-
-<div class="row">
+<div class="container-fluid">
     <div class="col-lg-12">
         <h5 class="alert-heading">Search if CIF is not recognizable in documents</h5>
         <br />
     </div>
-    <div class="col-lg-4 d-inline">
-        <form asp-action="GetRelatedCif" method="get">
-            <input type="hidden" asp-for="BoxID" asp-items="@ViewData["BoxID"]" />
-            <div class="form-group">
-                <label for="AccountNo" class="control-label">Account No</label><br>
-                <input type="text" id="AccountNo" name="AccountNo" value=""><br>
-                <input type="submit" value="Submit" class="btn-light" />
-            </div>
-        </form>
-    </div>
-    <div class="col-lg-4 d-inline">
-        <form asp-action="GetRelatedCif" method="get">
-            <input type="hidden" asp-for="BoxID" asp-items="@ViewData["BoxID"]" />
-            <div class="form-group">
-                <label for="custidn" class="control-label">Customer ID</label><br>
-                <input type="text" id="custidn" name="custidn" value=""><br>
-                <input type="submit" value="Submit" class="btn-light" />
-            </div>
-        </form>
+    <div class="d-flex flex-row">
+        <div class="col-lg-4 d-inline">
+            <form asp-action="GetRelatedCif" method="get">
+                <input type="hidden" asp-for="BoxID" asp-items="@ViewData["BoxID"]" />
+                <div class="input-group-prepend">
+                    <button type="submit" class="input-group-text purple lighten-3" style="width:inherit">
+                        <i class="bi-search" aria-hidden="true"></i>
+                    </button>
+                    <input type="text" id="AccountNo" name="AccountNo" placeholder="AccountNo" value=""><br>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-4 d-inline">
+            <form asp-action="GetRelatedCif" method="get">
+                <input type="hidden" asp-for="BoxID" asp-items="@ViewData["BoxID"]" />
+                <div class="input-group-prepend">
+                    <button type="submit" class="input-group-text purple lighten-3" style="width:inherit">
+                        <i class="bi-search" aria-hidden="true"></i>
+                    </button>
+                    <input type="text" id="custidn" name="custidn" placeholder="Customer ID" value=""><br>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-4 d-inline">
+            <form asp-controller="Customer" asp-action="GetCif" method="get">
+                <div class="input-group-prepend">
+                    <button type="submit" class="input-group-text purple lighten-3" style="width:inherit">
+                        <i class="bi-search" aria-hidden="true"></i>
+                    </button>
+                    <input type="text" id="CIFNo" name="CIFNo" placeholder="CIF No" value=""><br>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -78,3 +90,4 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+

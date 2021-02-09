@@ -19,6 +19,10 @@ namespace skcyDMSCataloguing
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                config.AddEnvironmentVariables(prefix: "ASPNETCORE_");
+            })
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.ClearProviders();

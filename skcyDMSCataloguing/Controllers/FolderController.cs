@@ -163,7 +163,7 @@ namespace skcyDMSCataloguing.Controllers
                 {
                     var folderreltoboxid = await baseAsyncFolderRepo.GetAllAsync(b => b.BoxID == boxid, orderBy: q => q.OrderByDescending(q => q.ID));
 
-                    if (folderreltoboxid.FirstOrDefault() != null)
+                    if (folderreltoboxid.FirstOrDefault() == null)
                     {
                         Folder foldertocreate = new Folder
                         {
@@ -315,17 +315,15 @@ namespace skcyDMSCataloguing.Controllers
 
         [AcceptVerbs("GET", "POST")]
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
-        public async Task<IActionResult> CIFHandledBy(string custDataCIFNo)
+        public async Task<IActionResult> CIFExists(string custDataCIFNo)
         {
      
-            var cif = await baseAsyncFolderRepo.GetByConditionAsync(f => f.CustDataCIFNo == custDataCIFNo);
-
+            var cif = await baseAsyncCustDataRepo.GetByConditionAsync(cd => cd.CIFNo == custDataCIFNo);
 
                 if (cif!=null)
             {
                 return Json(true);
             }
-
 
             else 
             {

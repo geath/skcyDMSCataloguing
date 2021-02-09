@@ -1,4 +1,7 @@
 
+## Modelling
+
+
 ## Sorting and Filtering 
 
 
@@ -25,3 +28,4 @@ the logging providers by calling ```.ConfigureLogging``` extension method
 - return JSON true/false based on the evaluation of the validation's logic. (jquery validate method is fired
   to perform the validation and for this method JSON result is expected )
   
+  - Server=WEBSRV1\\SAFETICA;Database=skcyDMSCataloguing;Trusted_Connection=True;MultipleActiveResultSets=true

@@ -1,0 +1,46 @@
+﻿@model CifManagedByViewModel
+@{
+    ViewData["Title"] = "GetCIF";
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+}
+
+
+<div class="d-flex">
+    CIF No  &nbsp <b style=" color:blue"> @Model.CustData.CIFNo </b>  &nbsp  is Managed by :
+</div>
+
+<br />
+
+<table class="table table-sm">
+    <thead>
+        <tr>            
+            <th scope="col">Helix</th>
+            <th scope="col">Velocity1</th>
+            <th scope="col">Velocity2</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            @if (Model.IsHelix1)
+            {
+                <td>@Model.IsHelix1</td>
+                <td></td>
+                <td></td>
+            }
+            else if (Model.IsVelocity1)
+            {
+                <td></td>
+                <td>@Model.IsVelocity1</td>
+                <td></td>
+            }
+            else
+            {
+                <td></td>
+                <td></td>
+                <td>@Model.IsVelocity2</td>
+            }
+        </tr>
+    </tbody>
+</table>
+
+
