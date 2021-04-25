@@ -103,3 +103,10 @@ namespace skcyDMSCataloguing
         }
     }
 }
+
+
+/* Windows Authentication  https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/authentication/windowsauthentication/ 
+   Host ASP.NET Core on Windows with IIS https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/?view=aspnetcore-5.0#iis-options
+   https://docs.microsoft.com/en-us/aspnet/core/security/authentication/windowsauth?view=aspnetcore-5.0&tabs=visual-studio
+ */
+
