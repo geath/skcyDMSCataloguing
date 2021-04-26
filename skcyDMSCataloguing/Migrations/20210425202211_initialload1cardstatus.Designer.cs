@@ -10,8 +10,8 @@ using skcyDMSCataloguing.DAL;
 namespace skcyDMSCataloguing.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201019112556_addautentication")]
-    partial class addautentication
+    [Migration("20210425202211_initialload1cardstatus")]
+    partial class initialload1cardstatus
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -290,6 +290,15 @@ namespace skcyDMSCataloguing.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("CardActive")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CardType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomerActive")
+                        .HasColumnType("int");
+
                     b.Property<string>("CustomerIDN")
                         .HasColumnType("nvarchar(max)");
 
@@ -297,6 +306,12 @@ namespace skcyDMSCataloguing.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DMSProject")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OldCIFNo")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");

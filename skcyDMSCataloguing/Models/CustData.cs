@@ -21,6 +21,7 @@ namespace skcyDMSCataloguing.Models
         public CardType CardType { get; set; }
         public string OldCIFNo { get; set; }
         public CustomerActive CustomerActive { get; set; }
+        public CardActive CardActive { get; set; }
         public DMSProject DMSProject { get; set; }
 
 
@@ -42,6 +43,13 @@ namespace skcyDMSCataloguing.Models
     }
 
     public enum CustomerActive
+    {
+        ACTIVE,
+        INACTIVE,
+        UNKNOWN
+    }
+
+    public enum CardActive
     {
         ACTIVE,
         INACTIVE,

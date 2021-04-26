@@ -9,10 +9,12 @@ namespace skcyDMSCataloguing.Models
     {
         public int ID { get; set; }
         
-        public string CustOldAccountNo {get; set;}
+        public string CustOldCIFNo {get; set;}
+        public string CustNewCIFNo { get; set; }
         public string CustAccountType {get; set;}
         public string CustAccountStatus {get; set;}
         public string CustAccountRelationCode {get; set;}
+
 
         public string CustCIFNo {get; set;}
         public CustData CustData {get; set;}

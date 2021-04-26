@@ -19,7 +19,7 @@
                         @:</tr><tr>
                         }
                         @:<td>
-                            <label for=" CIFNo">CIFNo: @cif.CIFNo - CIFName: @cif.CIFCustomerName </label>
+                              <label for="CIFNo" > CIFNo: @cif.CIFNo.ToString().Split('-')[0]/@cif.OldCIFNo  - Account : @cif.CIFNo.ToString().Split('-')[2] - Customer: @cif.CIFCustomerName - Card : @cif.CardTypePr / @cif.CardActivePr / @cif.ManagedBy</label>
                             <input type="radio" class="alert-primary" size="80" name="CIFNo" value=" @cif.CIFNo" /><br />                           
                         @:</td>
                     }

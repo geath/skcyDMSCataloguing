@@ -7,58 +7,64 @@
 
 <table class="table">
     <tr>
-        <th>Barcode</th>
-        <th>CIFNo</th>
-        <th>CustomerName</th>
 
-        <th>IsHelix1</th>
-        <th>IsVelocity1</th>
-        <th>IsVelocity2</th>
+        <th>CIFNo</th>
+        <th>Customer Name</th>
+        <th>Customer IDN</th>
+        <th>OldCIFNo</th>
+        <th>Card Type</th>
+        <th>IsCardActive</th>
+        <th>Account No</th>
+
+        <th>Managed By</th>
+
         <th></th>
     </tr>
 
     @foreach (var fld in Model.Folders)
     {
 
-        <tr>
-            <td>@fld.FolderName</td>
-            <td>@fld.CustDataCIFNo</td>
-            <td>@fld.CustData.CustomerName</td>
+<tr>
 
-            <td>
-                @{ if (fld.CustData.PrjHelixes1 != null)
+    <td>@fld.CustData.CustomerNo</td>
+    <td>@fld.CustData.CustomerName</td>
+    <td>@fld.CustData.CustomerIDN</td>
+    <td>@fld.CustData.OldCIFNo</td>
+    <td>@fld.CustData.CardType</td>
+    <td>@fld.CustData.CardActive</td>
+    <td>@fld.CustData.CIFNo.ToString().Split('-')[2]</td>
 
-                        foreach (var hlx in fld.CustData.PrjHelixes1)
-                        {
-                            @hlx.Helix1Pool
-                            <br />
-                        }
-                }
-            </td>
-            <td>
-                @{ if (fld.CustData.PrjVelocities1 != null)
 
-                        foreach (var vel1 in fld.CustData.PrjVelocities1)
-                        {
-                            @vel1.CustDataCIFNo.Any()
-                            <br />
-                        }
-                }
-            </td>
-            <td>
-                @{ if (fld.CustData.PrjVelocities2 != null)
 
-                        foreach (var vel2 in fld.CustData.PrjVelocities2)
-                        {
-                            @vel2.CustDataCIFNo.Any()
-                            <br />
-                        }
-                }
-            </td>
-            <td>
-                <a asp-controller="Folder" asp-action="Edit" asp-route-id="@fld.ID">Edit Folder</a> |
-                <a asp-controller="Folder" asp-action="Delete" asp-route-ID="@fld.ID">Delete Folder</a>
-            </td>
-        </tr>
+    <td>
+          @{ if (fld.CustData.PrjHelixes1 != null)
+
+                  foreach (var hlx in fld.CustData.PrjHelixes1)
+                  {
+                      @hlx.Helix1Pool
+                      <br />
+                  }
+              else if (fld.CustData.PrjVelocities1 != null)
+
+                  foreach (var vel1 in fld.CustData.PrjVelocities1)
+                  {
+                      @vel1.CustDataCIFNo.Any()
+                      <br />
+                  }
+              else if (fld.CustData.PrjVelocities2 != null)
+
+                  foreach (var vel2 in fld.CustData.PrjVelocities2)
+                  {
+                      @vel2.CustDataCIFNo.Any()
+                      <br />
+                  };
+          }
+        </td>
+
+    <td>
+        <a asp-controller="Folder" asp-action="Edit" asp-route-id="@fld.ID">Edit Folder</a> |
+        <a asp-controller="Folder" asp-action="Delete" asp-route-ID="@fld.ID">Delete Folder</a>
+    </td>
+</tr>
     }
 </table>

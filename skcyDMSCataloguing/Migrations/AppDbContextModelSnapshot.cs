@@ -288,6 +288,9 @@ namespace skcyDMSCataloguing.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("CardActive")
+                        .HasColumnType("int");
+
                     b.Property<int>("CardType")
                         .HasColumnType("int");
 
@@ -336,7 +339,10 @@ namespace skcyDMSCataloguing.Migrations
                     b.Property<string>("CustCIFNo")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CustOldAccountNo")
+                    b.Property<string>("CustNewCIFNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustOldCIFNo")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");

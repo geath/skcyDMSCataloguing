@@ -10,8 +10,8 @@ using skcyDMSCataloguing.DAL;
 namespace skcyDMSCataloguing.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210425193545_enhancecustomertable")]
-    partial class enhancecustomertable
+    [Migration("20210425195916_initialload")]
+    partial class initialload
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

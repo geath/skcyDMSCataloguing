@@ -90,7 +90,7 @@ namespace skcyDMSCataloguing.Controllers
             if (!String.IsNullOrEmpty(accountno) && String.IsNullOrEmpty(custidn))
             {
                 var acc = await baseAsyncCustAccRepo.GetByConditionAsync(filter: ac => ac.CustAccountNo == accountno, includeProperties: "CustRelDataEntries");
-                var allcifs = await baseAsyncCustDataRepo.GetAllAsync();
+                var allcifs = await baseAsyncCustDataRepo.GetAllAsync(filter: a=>a.CIFNo.Contains(accountno));
                 var accountcifs = new HashSet<string>(acc.CustRelDataEntries.Select(cf => cf.CustCIFNo));
                 ViewData["AccountNo"] = acc.CustAccountNo;
                 var viewModel = new List<AssignedAccountData>();
@@ -101,7 +101,12 @@ namespace skcyDMSCataloguing.Controllers
                         CIFNo = cif.CIFNo.Trim(),
                         CIFCustomerName = cif.CustomerName ?? "",
                         Assigned = accountcifs.Contains(cif.CIFNo),
-                        BoxID = boxid
+                        BoxID = boxid,
+
+                        OldCIFNo = cif.OldCIFNo,
+                        CardTypePr = cif.CardType.ToString(),
+                        CardActivePr = cif.CardActive.ToString()
+                        //,ManagedBy = ((cif.PrjHelixes1.ToString() ?? cif.PrjVelocities1.ToString()) ?? cif.PrjVelocities2.ToString()) ?? "BOC"
                     });
                 }
                 var model = viewModel.Where(a => a.Assigned == true).ToList();
@@ -110,7 +115,11 @@ namespace skcyDMSCataloguing.Controllers
 
             if (String.IsNullOrEmpty(accountno) && !String.IsNullOrEmpty(custidn))
             {
-                var allcifs = await baseAsyncCustDataRepo.GetAllAsync(filter: cd => cd.CustomerIDN.Contains(custidn) || cd.CustomerName.Contains(custidn));
+                var allcifs = await baseAsyncCustDataRepo.GetAllAsync(filter: cd => 
+                                        (cd.CustomerIDN.Contains(custidn) || cd.CustomerName.Contains(custidn))
+                                        ||
+                                        (cd.OldCIFNo.Contains(custidn) || cd.OldCIFNo.Contains(custidn)));
+
                 var viewModel = new List<AssignedAccountData>();
                 foreach (var cif in allcifs)
                 {
@@ -118,7 +127,12 @@ namespace skcyDMSCataloguing.Controllers
                     {
                         CIFNo = cif.CIFNo.Trim(),
                         CIFCustomerName = cif.CustomerName ?? "",
-                        BoxID = boxid
+                        BoxID = boxid,
+
+                        OldCIFNo = cif.OldCIFNo,
+                        CardTypePr = cif.CardType.ToString()??"Unknown",
+                        CardActivePr= cif.CardActive.ToString() ?? "Unknown"                        
+                       ,// ManagedBy = (cif.PrjHelixes1.Any()?"Helix":(cif.PrjVelocities1.Any()?"Velocity 1" :(cif.PrjVelocities2.Any()?"Velocity 2":"BOC")))
                     });
                 }
                 var model = viewModel.ToList();
@@ -163,7 +177,7 @@ namespace skcyDMSCataloguing.Controllers
                 {
                     var folderreltoboxid = await baseAsyncFolderRepo.GetAllAsync(b => b.BoxID == boxid, orderBy: q => q.OrderByDescending(q => q.ID));
 
-                    if (folderreltoboxid.FirstOrDefault() == null)
+                    if (folderreltoboxid.FirstOrDefault() != null)
                     {
                         Folder foldertocreate = new Folder
                         {
@@ -175,7 +189,7 @@ namespace skcyDMSCataloguing.Controllers
                         };
                         return View("CreateFromBox", foldertocreate);
                     }
-                    return View("CreateFromBox", folderreltoboxid.FirstOrDefault());
+                    return View("CreateFromBox" , folderreltoboxid.FirstOrDefault() );
                 }
             }
 
