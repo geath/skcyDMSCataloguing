@@ -356,14 +356,15 @@ namespace skcyDMSCataloguing.Controllers
         // GET: BookController/Create
         //[AllowAnonymous]
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
-        public async Task<ActionResult> Create()
+        public async Task<ActionResult> Create(BoxTypeA boxtype , int boxno)
         {
+
             Box box = new Box();
             var maxid = (from boc in await baseAsyncBoxRepo.GetAllAsync()
                          select boc.ID).DefaultIfEmpty(1).Max();
             string currentuser = User.Identity.Name.ToString();
 
-            box.BoxDescription = "Box." + maxid.ToString();
+            
             box.DateBoxCreated = DateTime.Now;
             box.BoxCreatedBy = currentuser.Substring(currentuser.LastIndexOf('\\') + 1);
             box.BoxCreatorID = 1;
@@ -377,13 +378,13 @@ namespace skcyDMSCataloguing.Controllers
         [ValidateAntiForgeryToken]
         //[AllowAnonymous]
         [Authorize(Roles = "Administrators,WebAppAdmins,WebAppPowerUsers,WebAppEditors,WebAppContributors")]
-        public async Task<ActionResult> Create([Bind("BoxDescription,DateBoxCreated,BoxCreatedBy,BoxCreatorID")] Box box)
+        public async Task<ActionResult> Create([Bind("BoxTypeA,BoxTypeNumberA, BoxDescription,DateBoxCreated,BoxCreatedBy,BoxCreatorID")] Box box)
         {
             try
             {
                 if (ModelState.IsValid)
-                {
-
+                {                     
+                    box.BoxDescription = box.BoxTypeA.ToString() + '.' + box.BoxTypeNumberA.ToString();
                     baseAsyncBoxRepo.Insert(box);
                     await baseAsyncBoxRepo.SaveAsync();
                     return RedirectToAction("Index");

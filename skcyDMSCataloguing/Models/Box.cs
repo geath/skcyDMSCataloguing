@@ -11,7 +11,14 @@ namespace skcyDMSCataloguing.Models
     {
         public int ID { get; set; }
         public string BoxDescription  { get; set; }
-        
+
+        public BoxTypeA BoxTypeA { get; set; }
+        public string BoxTypeTextA { get; set; }
+        public int BoxTypeNumberA { get; set; }
+        public bool BoxTypeBoolA { get; set; }
+        public int MyProperty { get; set; }
+
+
         public DateTime DateBoxCreated { get; set; }
         public string BoxCreatedBy { get; set; }
 
@@ -19,5 +26,13 @@ namespace skcyDMSCataloguing.Models
         public virtual BoxCreator BoxCreator { get; set; }
 
         public ICollection<Folder> Folders { get; set; }        
+    }
+
+    public enum BoxTypeA {
+        AC,
+        NAC,
+        AD,
+        NAD,
+        Unknown
     }
 }
